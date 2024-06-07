@@ -22,7 +22,7 @@ const ClientsPage = async ({ params }: { params: { id: string } }) => {
     <div className="flex-col">
       <nav className=" py-10 px-9 flex justify-between w-full ">
         <h1 className=" text-blue-950 text-4xl font-semibold">
-          Gestión de clientes
+          Gestión de Clientes
         </h1>
       </nav>
       <div className="flex-1 space-y-4 p-8 pt-2">

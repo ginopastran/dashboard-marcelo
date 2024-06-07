@@ -1,4 +1,4 @@
 export const siteConfig = {
-  name: "Taskify",
+  name: "Toro",
   description: "Collaborate, manage projects, and reach new productivity peaks",
 };
