@@ -65,15 +65,19 @@ export async function PATCH(
 
     const body = await req.json();
 
+    console.log(body);
+
     const {
-      client_name,
+      id,
+      clientName,
       industry,
-      responsible_name,
-      job_title,
+      responsibleName,
+      jobTitle,
       contact,
-      DNI,
+      dni,
       email,
       other,
+      label,
     } = body;
 
     if (!session?.user.id) {
@@ -84,7 +88,7 @@ export async function PATCH(
       return new NextResponse("Client id is required", { status: 400 });
     }
 
-    if (!client_name) {
+    if (!clientName) {
       return new NextResponse("Name is required", { status: 400 });
     }
 
@@ -92,11 +96,11 @@ export async function PATCH(
       return new NextResponse("Industry is required", { status: 400 });
     }
 
-    if (!responsible_name) {
+    if (!responsibleName) {
       return new NextResponse("Responsible name is required", { status: 400 });
     }
 
-    if (!job_title) {
+    if (!jobTitle) {
       return new NextResponse("Job title is required", { status: 400 });
     }
 
@@ -104,7 +108,7 @@ export async function PATCH(
       return new NextResponse("Contact is required", { status: 400 });
     }
 
-    if (!DNI) {
+    if (!dni) {
       return new NextResponse("DNI is required", { status: 400 });
     }
     if (!email) {
@@ -116,18 +120,24 @@ export async function PATCH(
         id: params.clientId,
       },
       data: {
-        client_name,
+        client_name: clientName,
         industry,
-        responsible_name,
-        job_title,
+        responsible_name: responsibleName,
+        job_title: jobTitle,
         contact,
-        DNI,
+        DNI: dni,
         email,
         other,
       },
     });
 
-    return NextResponse.json(client);
+    const clientJson = {
+      ...client,
+      contact: client.contact.toString(),
+      DNI: client.DNI.toString(),
+    };
+
+    return NextResponse.json(clientJson);
   } catch (error) {
     console.log("[CLIENTE_PATCH]", error);
     return new NextResponse("Internal error", { status: 500 });

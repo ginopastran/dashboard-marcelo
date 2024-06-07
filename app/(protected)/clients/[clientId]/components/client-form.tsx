@@ -24,6 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { AlertModal } from "@/components/modals/alert-modal";
 
 const formSchema = z.object({
+  id: z.string().optional(),
   clientName: z.string().min(2),
   industry: z.string().optional(),
   responsibleName: z.string().optional(),
@@ -60,6 +61,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 
   const transformedInitialData = initialData
     ? {
+        id: initialData.id,
         clientName: initialData.client_name,
         industry: initialData.industry || "",
         responsibleName: initialData.responsible_name || "",
@@ -85,18 +87,24 @@ export const ClientForm: React.FC<ClientFormProps> = ({
     defaultValues: transformedInitialData,
   });
 
+  if (!initialData) {
+    throw new Error("ss");
+  }
+  console.log(initialData.id);
+
   const onSubmit = async (data: ClientFormValues) => {
     try {
       setLoading(true);
+
       if (initialData) {
-        await axios.patch(`/api/clients/${params.clientId}`, data);
+        await axios.patch(`/api/clients/${initialData.id}`, data);
       } else {
         await axios.post(`/api/clients`, data);
       }
       router.refresh();
       router.push(`/clients`);
       toast.success(toastMessage);
-      onClose(); // Close the dialog on successful submission
+      onClose(); // Cerrar el diálogo en caso de envío exitoso
     } catch (error: any) {
       toast.error("Algo salió mal.");
     } finally {

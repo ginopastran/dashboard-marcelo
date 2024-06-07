@@ -19,6 +19,8 @@ export const ClientsClient: React.FC<ClientsClientProps> = ({ data }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  console.log(data);
+
   return (
     <>
       <div className="flex items-center gap-3">

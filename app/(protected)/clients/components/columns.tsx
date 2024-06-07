@@ -6,12 +6,19 @@ import { CellAction } from "./cell-action";
 
 export type ClientColumn = {
   id: string;
-  name: string;
+  client_name: string;
+  industry: string;
+  responsible_name: string;
+  job_title: string;
+  contact: bigint;
+  DNI: bigint;
+  email: string;
+  other: string;
 };
 
 export const columns: ColumnDef<ClientColumn>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "client_name",
     header: "Name",
   },
   {

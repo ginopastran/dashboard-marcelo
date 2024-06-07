@@ -2,7 +2,14 @@
 
 import axios from "axios";
 import { useState } from "react";
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
+import {
+  Copy,
+  Edit,
+  FolderSymlink,
+  MoreHorizontal,
+  SlidersVertical,
+  Trash,
+} from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 
@@ -18,6 +25,8 @@ import { useClientModal } from "@/hooks/use-category-modal";
 
 import { ClientColumn } from "./columns";
 import { AlertModal } from "@/components/modals/alert-modal";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { ClientForm } from "../[clientId]/components/client-form";
 
 interface CellActionProps {
   data: ClientColumn;
@@ -28,6 +37,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const params = useParams();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  console.log(data);
 
   const onConfirm = async () => {
     try {
@@ -58,26 +70,22 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         onConfirm={onConfirm}
         loading={loading}
       />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
+      <Button>
+        <FolderSymlink className=" mr-2 h-4 w-4" /> Ver Información
+      </Button>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button>
+            <SlidersVertical className=" mr-2 h-4 w-4" /> Modificar
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => onCopy(data.id)}>
-            <Copy className="mr-2 h-4 w-4" /> Copiar ID
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push(`/clients/${data.id}`)}>
-            <Edit className="mr-2 h-4 w-4" /> Editar
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpen(true)}>
-            <Trash className="mr-2 h-4 w-4" /> Eliminar
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </DialogTrigger>
+        <DialogContent>
+          <ClientForm
+            initialData={data}
+            onClose={() => setIsDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

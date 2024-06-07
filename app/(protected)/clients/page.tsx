@@ -13,9 +13,16 @@ const ClientsPage = async ({ params }: { params: { id: string } }) => {
     },
   });
 
-  const formattedCategories: ClientColumn[] = clients.map((item) => ({
+  const formattedClients: ClientColumn[] = clients.map((item) => ({
     id: item.id,
-    name: item.client_name,
+    client_name: item.client_name,
+    industry: item.industry,
+    responsible_name: item.responsible_name,
+    job_title: item.job_title,
+    contact: item.contact,
+    DNI: item.DNI,
+    email: item.email || "",
+    other: item.other || "",
   }));
 
   return (
@@ -26,7 +33,7 @@ const ClientsPage = async ({ params }: { params: { id: string } }) => {
         </h1>
       </nav>
       <div className="flex-1 space-y-4 p-8 pt-2">
-        <ClientsClient data={formattedCategories} />
+        <ClientsClient data={formattedClients} />
       </div>
     </div>
   );
