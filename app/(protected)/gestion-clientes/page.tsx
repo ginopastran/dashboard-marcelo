@@ -10,7 +10,7 @@ import {
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import NewClient from "../_components/form/new-client";
+// import NewClient from "./[cliendId]/components/form/new-client";
 
 const page = () => {
   return (
@@ -28,9 +28,7 @@ const page = () => {
               Añadir Nuevo Cliente
             </Button>
           </DialogTrigger>
-          <DialogContent>
-            <NewClient />
-          </DialogContent>
+          <DialogContent>{/* <NewClient /> */}</DialogContent>
         </Dialog>
       </main>
     </div>

@@ -9,14 +9,16 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
+    // console.log(body);
+
     const {
       id,
-      client_name,
+      clientName,
       industry,
-      responsible_name,
-      job_title,
+      responsibleName,
+      jobTitle,
       contact,
-      DNI,
+      dni,
       email,
       other,
       label,
@@ -26,18 +28,18 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthenticated", { status: 403 });
     }
 
-    if (!client_name) {
+    if (!clientName) {
       return new NextResponse("Name is required", { status: 400 });
     }
     if (!industry) {
       return new NextResponse("Industry is required", { status: 400 });
     }
 
-    if (!responsible_name) {
+    if (!responsibleName) {
       return new NextResponse("Responsible name is required", { status: 400 });
     }
 
-    if (!job_title) {
+    if (!jobTitle) {
       return new NextResponse("Job title is required", { status: 400 });
     }
 
@@ -45,35 +47,38 @@ export async function POST(req: Request) {
       return new NextResponse("Contact is required", { status: 400 });
     }
 
-    if (!DNI) {
+    if (!dni) {
       return new NextResponse("DNI is required", { status: 400 });
     }
     if (!email) {
       return new NextResponse("Email is required", { status: 400 });
     }
 
-    const labels = await Promise.all(
-      label.map(async (name: any) => {
-        const existingLabel = await db.etiquetaCiente.findFirst({
-          where: { name },
-        });
-        return db.etiquetaCiente.upsert({
-          where: { id: existingLabel?.id || "" },
-          update: {},
-          create: { name },
-        });
-      })
-    );
+    let labels = [];
+    if (label) {
+      labels = await Promise.all(
+        label.map(async (name: any) => {
+          const existingLabel = await db.etiquetaCiente.findFirst({
+            where: { name },
+          });
+          return db.etiquetaCiente.upsert({
+            where: { id: existingLabel?.id || "" },
+            update: {},
+            create: { name },
+          });
+        })
+      );
+    }
 
     const client = await db.cliente.create({
       data: {
         id,
-        client_name,
+        client_name: clientName,
         industry,
-        responsible_name,
-        job_title,
+        responsible_name: responsibleName,
+        job_title: jobTitle,
         contact,
-        DNI,
+        DNI: dni,
         email,
         other,
         label: {
@@ -94,32 +99,6 @@ export async function POST(req: Request) {
     return NextResponse.json(clientJson);
   } catch (error) {
     console.log("[CLIENTE_POST]", error);
-    return new NextResponse("Internal error", { status: 500 });
-  }
-}
-
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const clientName = searchParams.get("clientName") || undefined;
-    const industry = searchParams.get("industry") || undefined;
-
-    const clients = await db.cliente.findMany({
-      where: {
-        client_name: clientName,
-        industry: industry,
-      },
-      include: {
-        label: true,
-      },
-      orderBy: {
-        client_name: "asc",
-      },
-    });
-
-    return NextResponse.json(clients);
-  } catch (error) {
-    console.log("[CLIENTE_GET]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }

@@ -67,7 +67,7 @@ export const Navigation = () => {
         <div className="flex flex-col">
           <Link href={"/dashboard"}>Dashboard</Link>
           <Link href={"/notificaciones"}>Notificaciones</Link>
-          <Link href={"/gestion-clientes"}>Gestión de Clientes</Link>
+          <Link href={"/clients"}>Gestión de Clientes</Link>
           <Link href={"/presupuestos"}>Presupuestos</Link>
           <Link href={"/gestion-obras"}>Gestión de Obras</Link>
           <Link href={"/administracion"}>Administración</Link>
