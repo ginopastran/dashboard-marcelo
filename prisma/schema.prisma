@@ -62,75 +62,48 @@ model PasswordResetToken {
   @@unique([email, token])
 }
 
-model Board {
-  id            String @id @default(uuid())
-  title         String
-  imageId       String
-  imageThumbUrl String @db.Text
-  imageFullUrl  String @db.Text
-  imageUserName String @db.Text
-  imageLinkHTML String @db.Text
-
-  lists List[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Cliente {
+  id               String           @id @default(cuid())
+  client_name      String
+  industry         String
+  responsible_name String
+  job_title        String
+  contact          BigInt
+  DNI              BigInt
+  email            String?          @unique
+  other            String?
+  presupuestos     Presupuesto[]
+  label            EtiquetaCiente[] @relation("ClienteEtiquetas")
+  contacts         Contacto[]
 }
 
-model List {
-  id    String @id @default(uuid())
-  title String
-  order Int
-
-  boardId String
-  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
-
-  cards Card[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([boardId])
+model Contacto {
+  id          String  @id @default(cuid())
+  client_name String
+  job_title   String
+  DNI         BigInt
+  contact     BigInt
+  email       String? @unique
+  other       String?
+  clienteId   String
+  cliente     Cliente @relation(fields: [clienteId], references: [id])
 }
 
-model Card {
-  id          String  @id @default(uuid())
-  title       String
-  order       Int
-  description String? @db.Text
-
-  listId String
-  list   List   @relation(fields: [listId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([listId])
+model EtiquetaCiente {
+  id       String    @id @default(cuid())
+  name     String
+  clientes Cliente[] @relation("ClienteEtiquetas")
 }
 
-enum ACTION {
-  CREATE
-  UPDATE
-  DELETE
+enum EstadoPresupuesto {
+  OPORTUNIDAD
+  ADJUDICADO
+  RECHAZADO
 }
 
-enum ENTITY_TYPE {
-  BOARD
-  LIST
-  CARD
-}
-
-model AuditLog {
-  id          String      @id @default(uuid())
-  orgId       String
-  action      ACTION
-  entityId    String
-  entityType  ENTITY_TYPE
-  entityTitle String
-  userId      String
-  userImage   String      @db.Text
-  userName    String      @db.Text
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Presupuesto {
+  id        String            @id @default(cuid())
+  state     EstadoPresupuesto
+  clienteId String
+  cliente   Cliente           @relation(fields: [clienteId], references: [id])
 }
