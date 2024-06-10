@@ -139,20 +139,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
         onConfirm={onDelete}
         loading={loading}
       />
-      {initialData && (
-        <div className="flex items-center justify-between">
-          {initialData && (
-            <Button
-              disabled={loading}
-              variant="destructive"
-              size="sm"
-              onClick={() => setOpen(true)}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      )}
+
       {/* <Separator /> */}
       <Form {...form}>
         <form
@@ -214,6 +201,24 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="responsibleName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className=" text-slate-600">Etiquetas</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="TODO: HACER ESTO"
+                      {...field}
+                      className=" border-black border rounded-xl focus-visible:ring-0"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <div className="flex items-center absolute bottom-5 left-6">
             <Image
@@ -234,7 +239,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                     <FormControl>
                       <Input
                         disabled={loading}
-                        placeholder="Cargo del contacto"
+                        placeholder="Cargo del Contacto"
                         {...field}
                         className={inputStyle}
                       />
@@ -322,7 +327,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                 )}
               />
             </div>
-            <div className="flex items-end justify-end absolute bottom-5 right-6">
+            <div className="flex items-end justify-end absolute bottom-5 right-6 gap-3">
               <Button
                 disabled={loading}
                 className=" bg-blue-button py-1 px-6 rounded-xl tracking-wide"
@@ -331,6 +336,22 @@ export const ClientForm: React.FC<ClientFormProps> = ({
               >
                 {action}
               </Button>
+              {initialData && (
+                <div className="flex items-center justify-between">
+                  {initialData && (
+                    <Button
+                      disabled={loading}
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => setOpen(true)}
+                      className=" rounded-xl"
+                      type="button"
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </form>

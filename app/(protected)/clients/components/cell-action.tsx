@@ -91,7 +91,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
               <SetttingsIcon className=" mr-2" /> Modificar
             </button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className=" max-w-6xl p-0 border-0 gap-0 rounded-3xl min-h-[85vh]">
             <ClientForm
               initialData={data}
               onClose={() => setIsDialogOpen(false)}

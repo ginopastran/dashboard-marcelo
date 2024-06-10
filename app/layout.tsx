@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import { siteConfig } from "@/config/site";
 import { ToastProvider } from "@/components/providers/toast-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,8 +38,14 @@ export default async function RootLayout({
         <body className={inter.className}>
           <Toaster />
           <ToastProvider />
-
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </SessionProvider>

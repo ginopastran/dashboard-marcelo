@@ -35,7 +35,7 @@ export const ClientsClient: React.FC<ClientsClientProps> = ({ data }) => {
               Añadir Nuevo Cliente
             </Button>
           </DialogTrigger>
-          <DialogContent className=" max-w-6xl p-0 border-0 gap-0 rounded-3xl min-h-[65vh]">
+          <DialogContent className=" max-w-6xl p-0 border-0 gap-0 rounded-3xl min-h-[85vh]">
             <ClientForm
               initialData={null}
               onClose={() => setIsDialogOpen(false)}
