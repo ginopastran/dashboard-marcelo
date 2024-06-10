@@ -87,11 +87,6 @@ export const ClientForm: React.FC<ClientFormProps> = ({
     defaultValues: transformedInitialData,
   });
 
-  if (!initialData) {
-    throw new Error("ss");
-  }
-  console.log(initialData.id);
-
   const onSubmit = async (data: ClientFormValues) => {
     try {
       setLoading(true);
