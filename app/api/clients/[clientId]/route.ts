@@ -35,6 +35,8 @@ export async function DELETE(
   try {
     const session = await auth();
 
+    console.log(params.clientId);
+
     if (!session?.user.id) {
       return new NextResponse("Unauthenticated", { status: 403 });
     }
@@ -49,7 +51,13 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json(client);
+    const clientSafe = {
+      ...client,
+      contact: client.contact.toString(),
+      DNI: client.DNI.toString(),
+    };
+
+    return NextResponse.json(clientSafe);
   } catch (error) {
     console.log("[CLIENTE_DELETE]", error);
     return new NextResponse("Internal error", { status: 500 });

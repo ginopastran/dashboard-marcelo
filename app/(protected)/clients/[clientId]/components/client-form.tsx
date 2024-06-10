@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { AlertModal } from "@/components/modals/alert-modal";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -57,7 +59,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
     ? "Editar los detalles del cliente."
     : "Añadir un nuevo cliente.";
   const toastMessage = initialData ? "Cliente actualizado." : "Cliente creado.";
-  const action = initialData ? "Guardar cambios" : "Crear";
+  const action = initialData ? "Guardar cambios" : "Confirmar";
 
   const transformedInitialData = initialData
     ? {
@@ -110,7 +112,9 @@ export const ClientForm: React.FC<ClientFormProps> = ({
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/clients/${params.clientId}`);
+      if (initialData) {
+        await axios.delete(`/api/clients/${initialData.id}`);
+      }
       router.refresh();
       router.push(`/clients`);
       toast.success("Cliente eliminado.");
@@ -124,6 +128,9 @@ export const ClientForm: React.FC<ClientFormProps> = ({
     }
   };
 
+  const inputStyle =
+    " bg-transparent border-0 border-b-[1px] border-black rounded-none px-0 focus-visible:ring-0";
+
   return (
     <>
       <AlertModal
@@ -132,53 +139,39 @@ export const ClientForm: React.FC<ClientFormProps> = ({
         onConfirm={onDelete}
         loading={loading}
       />
-      <div className="flex items-center justify-between">
-        {initialData && (
-          <Button
-            disabled={loading}
-            variant="destructive"
-            size="sm"
-            onClick={() => setOpen(true)}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-      <Separator />
+      {initialData && (
+        <div className="flex items-center justify-between">
+          {initialData && (
+            <Button
+              disabled={loading}
+              variant="destructive"
+              size="sm"
+              onClick={() => setOpen(true)}
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      )}
+      {/* <Separator /> */}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full"
+          className="relative w-full flex gap-8 h-full mb-8"
         >
-          <div className="md:grid md:grid-cols-3 gap-8">
+          <div className="flex flex-col gap-8 bg-secondary-background w-[30%] px-10 py-14  rounded-bl-2xl rounded-l-2xl">
             <FormField
               control={form.control}
               name="clientName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre</FormLabel>
+                  <FormLabel className=" text-slate-600">Cliente</FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
                       placeholder="Nombre del cliente"
                       {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder="Email del cliente"
-                      {...field}
+                      className={inputStyle}
                     />
                   </FormControl>
                   <FormMessage />
@@ -190,12 +183,13 @@ export const ClientForm: React.FC<ClientFormProps> = ({
               name="industry"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Industria</FormLabel>
+                  <FormLabel className=" text-slate-600">Industria</FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
                       placeholder="Industria"
                       {...field}
+                      className={inputStyle}
                     />
                   </FormControl>
                   <FormMessage />
@@ -207,82 +201,13 @@ export const ClientForm: React.FC<ClientFormProps> = ({
               name="responsibleName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre del Responsable</FormLabel>
+                  <FormLabel className=" text-slate-600">Responsable</FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
                       placeholder="Nombre del Responsable"
                       {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="jobTitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Título del Trabajo</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder="Título del Trabajo"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="contact"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contacto</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder="Contacto"
-                      type="number"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="dni"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>DNI</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder="DNI"
-                      type="number"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="other"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Otros</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder="Otros detalles"
-                      {...field}
+                      className={inputStyle}
                     />
                   </FormControl>
                   <FormMessage />
@@ -290,9 +215,124 @@ export const ClientForm: React.FC<ClientFormProps> = ({
               )}
             />
           </div>
-          <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
-          </Button>
+          <div className="flex items-center absolute bottom-5 left-6">
+            <Image
+              src={"/arquimetal-logo-blue.svg"}
+              alt="Arquimetal-Logo-Blue"
+              width={45}
+              height={45}
+            />
+          </div>
+          <div className="flex flex-col gap-8 px-10 py-14  rounded-bl-2xl rounded-l-2xl ">
+            <div className=" flex gap-8">
+              <FormField
+                control={form.control}
+                name="jobTitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className=" text-slate-600">Cargo</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={loading}
+                        placeholder="Cargo del contacto"
+                        {...field}
+                        className={inputStyle}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dni"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className=" text-slate-600">DNI</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={loading}
+                        placeholder="D.N.I."
+                        type="number"
+                        {...field}
+                        className={inputStyle}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex gap-8">
+              <FormField
+                control={form.control}
+                name="contact"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className=" text-slate-600">Contacto</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={loading}
+                        placeholder="Contacto"
+                        type="number"
+                        {...field}
+                        className={inputStyle}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className=" text-slate-600">Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={loading}
+                        placeholder="Email del cliente"
+                        {...field}
+                        className={inputStyle}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex flex-col">
+              <FormField
+                control={form.control}
+                name="other"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className=" text-slate-600">Otros</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={loading}
+                        placeholder="Otros detalles"
+                        {...field}
+                        className={inputStyle}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex items-end justify-end absolute bottom-5 right-6">
+              <Button
+                disabled={loading}
+                className=" bg-blue-button py-1 px-6 rounded-xl tracking-wide"
+                type="submit"
+                size={"sm"}
+              >
+                {action}
+              </Button>
+            </div>
+          </div>
         </form>
       </Form>
     </>

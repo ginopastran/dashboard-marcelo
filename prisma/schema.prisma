@@ -72,6 +72,8 @@ model Cliente {
   DNI              BigInt
   email            String?          @unique
   other            String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
   presupuestos     Presupuesto[]
   label            EtiquetaCiente[] @relation("ClienteEtiquetas")
   contacts         Contacto[]

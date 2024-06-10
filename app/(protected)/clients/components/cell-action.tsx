@@ -27,9 +27,12 @@ import { ClientColumn } from "./columns";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClientForm } from "../[clientId]/components/client-form";
+import { Cliente } from "@prisma/client";
+import SetttingsIcon from "@/components/icons/settings";
+import BoxArrowIcon from "@/components/icons/box-arrow";
 
 interface CellActionProps {
-  data: ClientColumn;
+  data: Cliente;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -39,13 +42,15 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  console.log(data);
+  // console.log(data);
 
   const onConfirm = async () => {
+    console.log(data.id);
+
     try {
       setLoading(true);
       await axios.delete(`/api/clients/${data.id}`);
-      toast.success("Categoría eliminada.");
+      toast.success("Cliente eliminado.");
       router.refresh();
     } catch (error) {
       toast.error(
@@ -59,7 +64,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
-    toast.success("Category ID copiado.");
+    toast.success("Cliente ID copiado.");
   };
 
   return (
@@ -70,22 +75,30 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         onConfirm={onConfirm}
         loading={loading}
       />
-      <Button>
+      {/* <Button className=" bg-transparent text-heading-blue">
         <FolderSymlink className=" mr-2 h-4 w-4" /> Ver Información
-      </Button>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button>
-            <SlidersVertical className=" mr-2 h-4 w-4" /> Modificar
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <ClientForm
-            initialData={data}
-            onClose={() => setIsDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      </Button> */}
+      <div className="flex gap-12 items-end">
+        <button className=" text-heading-blue flex items-center text-lg font-semibold">
+          <BoxArrowIcon className=" mr-2" /> Ver Información
+        </button>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            {/* <Button>
+              <SlidersVertical className=" mr-2 h-4 w-4" /> Modificar
+            </Button> */}
+            <button className=" text-heading-blue flex items-center text-lg font-semibold">
+              <SetttingsIcon className=" mr-2" /> Modificar
+            </button>
+          </DialogTrigger>
+          <DialogContent>
+            <ClientForm
+              initialData={data}
+              onClose={() => setIsDialogOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
     </>
   );
 };
