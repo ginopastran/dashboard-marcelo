@@ -8,8 +8,7 @@ export async function POST(req: Request) {
     const session = await auth();
 
     const body = await req.json();
-
-    // console.log(body);
+    console.log("Request body:", body); // Debugging line
 
     const {
       id,
@@ -21,7 +20,7 @@ export async function POST(req: Request) {
       dni,
       email,
       other,
-      label,
+      labels,
     } = body;
 
     if (!session?.user.id) {
@@ -34,19 +33,15 @@ export async function POST(req: Request) {
     if (!industry) {
       return new NextResponse("Industry is required", { status: 400 });
     }
-
     if (!responsibleName) {
       return new NextResponse("Responsible name is required", { status: 400 });
     }
-
     if (!jobTitle) {
       return new NextResponse("Job title is required", { status: 400 });
     }
-
     if (!contact) {
       return new NextResponse("Contact is required", { status: 400 });
     }
-
     if (!dni) {
       return new NextResponse("DNI is required", { status: 400 });
     }
@@ -54,10 +49,10 @@ export async function POST(req: Request) {
       return new NextResponse("Email is required", { status: 400 });
     }
 
-    let labels = [];
-    if (label) {
-      labels = await Promise.all(
-        label.map(async (name: any) => {
+    let labelRecords = [];
+    if (labels) {
+      labelRecords = await Promise.all(
+        labels.map(async (name: string) => {
           const existingLabel = await db.etiquetaCiente.findFirst({
             where: { name },
           });
@@ -82,7 +77,7 @@ export async function POST(req: Request) {
         email,
         other,
         label: {
-          connect: labels.map((label) => ({ id: label.id })),
+          connect: labelRecords.map((label) => ({ id: label.id })),
         },
       },
       include: {

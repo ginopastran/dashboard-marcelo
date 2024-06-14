@@ -10,10 +10,14 @@ import { columns, ClientColumn } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClientForm } from "../[clientId]/components/client-form";
-import { Cliente } from "@prisma/client";
+import { Cliente, EtiquetaCiente } from "@prisma/client";
+
+interface ClienteConEtiquetas extends Cliente {
+  label: EtiquetaCiente[];
+}
 
 interface ClientsClientProps {
-  data: Cliente[];
+  data: ClienteConEtiquetas[];
 }
 
 export const ClientsClient: React.FC<ClientsClientProps> = ({ data }) => {

@@ -6,8 +6,8 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { Trash } from "lucide-react";
-import { Cliente } from "@prisma/client";
+import { Trash, X } from "lucide-react";
+import { Cliente, EtiquetaCiente } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,7 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
+// Updated form schema to include labels
 const formSchema = z.object({
   id: z.string().optional(),
   clientName: z.string().min(2),
@@ -35,14 +36,68 @@ const formSchema = z.object({
   dni: z.string().optional(), // Change to string
   email: z.string().email().optional(),
   other: z.string().optional(),
+  labels: z.array(z.string()).optional(), // Add labels as an array of strings
 });
 
 type ClientFormValues = z.infer<typeof formSchema>;
 
+interface ClienteConEtiquetas extends Cliente {
+  label: EtiquetaCiente[];
+}
+
 interface ClientFormProps {
-  initialData: Cliente | null;
+  initialData: ClienteConEtiquetas | null;
   onClose: () => void;
 }
+
+const TagsInput: React.FC<{
+  tags: string[];
+  setTags: (tags: string[]) => void;
+}> = ({ tags, setTags }) => {
+  const [inputValue, setInputValue] = useState("");
+
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && inputValue.trim() !== "") {
+      e.preventDefault();
+      setTags([...tags, inputValue.trim()]);
+      setInputValue("");
+    }
+  };
+
+  const handleRemoveTag = (index: number) => {
+    setTags(tags.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div>
+      <Input
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleAddTag}
+        placeholder="Añadir etiquetas y presionar Enter"
+        className="border-black border rounded-xl focus-visible:ring-0 bg-transparent"
+      />
+      <div className="mt-2 flex flex-wrap gap-2">
+        {tags.map((tag, index) => (
+          <div
+            key={index}
+            className="flex items-center py-0 bg-label-purple text-white text-xs rounded-full"
+          >
+            <div className=" bg-white h-2 w-2 rounded-full items-start ml-1" />
+            <span className=" ml-1">{tag}</span>
+            <button
+              type="button"
+              onClick={() => handleRemoveTag(index)}
+              className="mx-1 text-red-500"
+            >
+              <X className="h-3 w-3 text-white" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export const ClientForm: React.FC<ClientFormProps> = ({
   initialData,
@@ -53,6 +108,9 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [tags, setTags] = useState<string[]>(
+    initialData?.label.map((etiqueta) => etiqueta.name) || []
+  );
 
   const title = initialData ? "Editar Cliente" : "Crear Cliente";
   const description = initialData
@@ -72,6 +130,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
         dni: initialData.DNI ? initialData.DNI.toString() : "", // Convert to string
         email: initialData.email || "",
         other: initialData.other || "",
+        labels: initialData.label.map((etiqueta) => etiqueta.name) || [], // Convert labels to array of names
       }
     : {
         clientName: "",
@@ -82,6 +141,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
         dni: "",
         email: "",
         other: "",
+        labels: [],
       };
 
   const form = useForm<ClientFormValues>({
@@ -90,8 +150,11 @@ export const ClientForm: React.FC<ClientFormProps> = ({
   });
 
   const onSubmit = async (data: ClientFormValues) => {
+    // console.log(data);
+
     try {
       setLoading(true);
+      data.labels = tags; // Add tags to the form data
 
       if (initialData) {
         await axios.patch(`/api/clients/${initialData.id}`, data);
@@ -140,7 +203,6 @@ export const ClientForm: React.FC<ClientFormProps> = ({
         loading={loading}
       />
 
-      {/* <Separator /> */}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -201,24 +263,11 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="responsibleName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className=" text-slate-600">Etiquetas</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder="TODO: HACER ESTO"
-                      {...field}
-                      className=" border-black border rounded-xl focus-visible:ring-0"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormItem>
+              <FormLabel className=" text-slate-600">Etiquetas</FormLabel>
+              <TagsInput tags={tags} setTags={setTags} />
+              <FormMessage />
+            </FormItem>
           </div>
           <div className="flex items-center absolute bottom-5 left-6">
             <Image

@@ -49,6 +49,10 @@ export async function DELETE(
       where: {
         id: params.clientId,
       },
+      include: {
+        label: true,
+        contacts: true,
+      },
     });
 
     const clientSafe = {
@@ -73,10 +77,9 @@ export async function PATCH(
 
     const body = await req.json();
 
-    console.log(body);
+    // console.log(body);
 
     const {
-      id,
       clientName,
       industry,
       responsibleName,
@@ -85,7 +88,7 @@ export async function PATCH(
       dni,
       email,
       other,
-      label,
+      labels, // Use labels instead of label for consistency
     } = body;
 
     if (!session?.user.id) {
@@ -123,6 +126,45 @@ export async function PATCH(
       return new NextResponse("Email is required", { status: 400 });
     }
 
+    // Fetch existing labels from the database
+    const existingClient = await db.cliente.findUnique({
+      where: {
+        id: params.clientId,
+      },
+      include: {
+        label: true,
+      },
+    });
+
+    if (!existingClient) {
+      return new NextResponse("Client not found", { status: 404 });
+    }
+
+    // Prepare labels for update
+    const labelRecords = await Promise.all(
+      labels.map(async (name: string) => {
+        const existingLabel = await db.etiquetaCiente.findFirst({
+          where: { name },
+        });
+        return db.etiquetaCiente.upsert({
+          where: { id: existingLabel?.id || "" },
+          update: {},
+          create: { name },
+        });
+      })
+    );
+
+    const newLabelIds = labelRecords.map((label) => label.id);
+    const oldLabelIds = existingClient.label.map((label) => label.id);
+
+    const labelIdsToDisconnect = oldLabelIds.filter(
+      (id) => !newLabelIds.includes(id)
+    );
+    const labelIdsToConnect = newLabelIds.filter(
+      (id) => !oldLabelIds.includes(id)
+    );
+
+    // Update client with new data and labels
     const client = await db.cliente.update({
       where: {
         id: params.clientId,
@@ -136,6 +178,13 @@ export async function PATCH(
         DNI: dni,
         email,
         other,
+        label: {
+          disconnect: labelIdsToDisconnect.map((id) => ({ id })),
+          connect: labelIdsToConnect.map((id) => ({ id })),
+        },
+      },
+      include: {
+        label: true,
       },
     });
 

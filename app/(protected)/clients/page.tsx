@@ -9,6 +9,7 @@ const ClientsPage = async ({ params }: { params: { id: string } }) => {
     where: {
       id: params.id,
     },
+    include: { label: true },
     orderBy: {
       client_name: "desc",
     },
@@ -27,7 +28,7 @@ const ClientsPage = async ({ params }: { params: { id: string } }) => {
   // }));
 
   return (
-    <div className="flex-col px-9">
+    <div className="flex-col px-9 bg-secondary-background">
       <nav className=" py-10 flex justify-between w-full pt-20">
         <h1 className=" text-heading-blue text-4xl font-semibold">
           Gestión de Clientes

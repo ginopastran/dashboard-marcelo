@@ -14,17 +14,17 @@ const HomeIcon = ({ className }: { className: string }) => {
       <path
         d="M1 9.85316L9.85316 1L18.7063 9.85316"
         stroke="#A3AED0"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={twMerge(className)}
       />
       <path
         d="M3.72412 7.12911V15.9823H15.9823V7.12911"
         stroke="#A3AED0"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className={twMerge(className)}
       />
     </svg>

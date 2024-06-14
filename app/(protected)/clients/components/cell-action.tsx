@@ -27,12 +27,16 @@ import { ClientColumn } from "./columns";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClientForm } from "../[clientId]/components/client-form";
-import { Cliente } from "@prisma/client";
+import { Cliente, EtiquetaCiente } from "@prisma/client";
 import SetttingsIcon from "@/components/icons/settings";
 import BoxArrowIcon from "@/components/icons/box-arrow";
 
+interface ClienteConEtiquetas extends Cliente {
+  label: EtiquetaCiente[];
+}
+
 interface CellActionProps {
-  data: Cliente;
+  data: ClienteConEtiquetas;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -79,9 +83,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         <FolderSymlink className=" mr-2 h-4 w-4" /> Ver Información
       </Button> */}
       <div className="flex gap-12 items-end">
-        <button className=" text-heading-blue flex items-center text-lg font-semibold">
+        {/* <button className=" text-heading-blue flex items-center text-lg font-semibold">
           <BoxArrowIcon className=" mr-2" /> Ver Información
-        </button>
+        </button> */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             {/* <Button>
