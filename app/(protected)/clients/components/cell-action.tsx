@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useClientModal } from "@/hooks/use-category-modal";
 
-import { ClientColumn } from "./columns";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClientForm } from "../[clientId]/components/client-form";

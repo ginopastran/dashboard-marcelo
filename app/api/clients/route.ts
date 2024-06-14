@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
+import { Contacto } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
@@ -21,6 +21,7 @@ export async function POST(req: Request) {
       email,
       other,
       labels,
+      contacts, // Añadido para manejar contactos
     } = body;
 
     if (!session?.user.id) {
@@ -79,9 +80,22 @@ export async function POST(req: Request) {
         label: {
           connect: labelRecords.map((label) => ({ id: label.id })),
         },
+        contacts: contacts
+          ? {
+              create: contacts.map((contact: Partial<Contacto>) => ({
+                client_name: contact.contact_client_name,
+                job_title: contact.contact_job_title,
+                DNI: contact.contact_DNI,
+                contact: contact.contact_contact,
+                email: contact.contact_email,
+                other: contact.contact_other,
+              })),
+            }
+          : undefined,
       },
       include: {
         label: true,
+        contacts: true, // Incluido para devolver los contactos
       },
     });
 
@@ -89,6 +103,11 @@ export async function POST(req: Request) {
       ...client,
       contact: client.contact.toString(),
       DNI: client.DNI.toString(),
+      contacts: client.contacts.map((contact) => ({
+        ...contact,
+        contact: contact.contact_contact.toString(),
+        DNI: contact.contact_DNI.toString(),
+      })),
     };
 
     return NextResponse.json(clientJson);

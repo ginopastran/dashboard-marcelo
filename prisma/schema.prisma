@@ -76,19 +76,19 @@ model Cliente {
   updatedAt        DateTime         @updatedAt
   presupuestos     Presupuesto[]
   label            EtiquetaCiente[] @relation("ClienteEtiquetas")
-  contacts         Contacto[]
+  contacts         Contacto[]       @relation("ContactoCliente")
 }
 
 model Contacto {
-  id          String  @id @default(cuid())
-  client_name String
-  job_title   String
-  DNI         BigInt
-  contact     BigInt
-  email       String? @unique
-  other       String?
-  clienteId   String
-  cliente     Cliente @relation(fields: [clienteId], references: [id])
+  id                  String  @id @default(cuid())
+  contact_client_name String
+  contact_job_title   String
+  contact_DNI         BigInt
+  contact_contact     BigInt
+  contact_email       String? @unique
+  contact_other       String?
+  clienteId           String
+  cliente             Cliente @relation("ContactoCliente", fields: [clienteId], references: [id])
 }
 
 model EtiquetaCiente {

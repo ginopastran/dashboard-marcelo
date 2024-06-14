@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 
 import {
   Table,
@@ -19,63 +11,81 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { CellAction } from "@/app/(protected)/clients/components/cell-action";
-import { Cliente, EtiquetaCiente } from "@prisma/client";
+import { Cliente, Contacto, EtiquetaCiente } from "@prisma/client";
 import Image from "next/image";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "./collapsible";
+import { Collapsible, CollapsibleContent } from "./collapsible";
 import BoxArrowIcon from "../icons/box-arrow";
+import { ContactTable } from "./contact-table";
+import { ContactColumn } from "@/app/(protected)/clients/components/columns";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { CellAction } from "@/app/(protected)/clients/components/cell-action";
+import { Button } from "./button";
+import { ContactForm } from "@/app/(protected)/clients/[clientId]/components/contact-form";
 
 interface ClienteConEtiquetas extends Cliente {
   label: EtiquetaCiente[];
+  contacts: Contacto[];
 }
 
 interface DataTableProps<TData extends { [key: string]: any }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: ClienteConEtiquetas[];
   searchKey: string;
+  formattedData: ContactColumn[];
 }
 
 export function DataTable<TData extends { [key: string]: any }, TValue>({
   columns,
   data,
   searchKey,
+  formattedData,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  // Estado para mantener el estado de apertura/cierre de cada Collapsible
   const [openCollapsibles, setOpenCollapsibles] = useState<boolean[]>(
     Array(data.length).fill(false)
   );
+  const [isAdding, setIsAdding] = useState<boolean>(false); // Nuevo estado para manejar el formulario de adición de contactos
 
-  // Función para abrir/cerrar un Collapsible específico
   const toggleCollapsible = (index: number) => {
     setOpenCollapsibles((prev) =>
       prev.map((state, i) => (i === index ? !state : state))
     );
   };
 
-  // console.log(data);
+  const handleSaveContact = async (
+    newContact: Partial<Contacto>,
+    client: ClienteConEtiquetas,
+    clientId: string
+  ) => {
+    try {
+      const contactToSave = {
+        contact_client_name: newContact.contact_client_name || "",
+        contact_job_title: newContact.contact_job_title || "",
+        contact_DNI: newContact.contact_DNI
+          ? newContact.contact_DNI.toString()
+          : "0",
+        contact_contact: newContact.contact_contact
+          ? newContact.contact_contact.toString()
+          : "0",
+        contact_email: newContact.contact_email || "",
+        contact_other: newContact.contact_other || "",
+      };
 
-  function formatDNI(dni: BigInt) {
-    const dniStr = dni.toString(); // Convertir a cadena de texto
-    return dniStr.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Aplicar formato con puntos
-  }
+      await axios.post(`/api/clients/${clientId}/contacts`, contactToSave);
+
+      toast.success("Contacto guardado exitosamente.");
+      // Refrescar los datos o hacer cualquier lógica adicional que necesites
+    } catch (error) {
+      toast.error("Error al guardar el contacto.");
+      console.log(error);
+    }
+  };
+
+  const formatDNI = (dni: BigInt) => {
+    const dniStr = dni.toString();
+    return dniStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
 
   return (
     <div>
@@ -187,16 +197,38 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
                     <h2 className="font-semibold text-heading-blue text-lg">
                       OTROS CONTACTOS
                     </h2>
-                    <div className=" h-[1px] w-full bg-black/60 my-3" />
+                    <div className=" h-[1px] w-full bg-black/60 mt-6" />
+                    <div>
+                      <ContactTable
+                        searchKey="name"
+                        columns={columns}
+                        data={item.contacts as unknown as TData[]}
+                      />
+                    </div>
+                  </div>
+                  {isAdding && (
+                    <ContactForm
+                      onSave={(newContact) =>
+                        handleSaveContact(newContact, item, item.id)
+                      }
+                      onCancel={() => setIsAdding(false)}
+                    />
+                  )}
+                  <div className="flex items-center justify-start space-x-2 py-4">
+                    <Button
+                      onClick={() => setIsAdding(true)}
+                      variant="outline"
+                      className="mb-4 border-blue-button border-2 rounded-xl text-blue-button font-semibold text-base px-6 mt-5 hover:bg-blue-button hover:text-white"
+                      size={"sm"}
+                    >
+                      Añadir contacto
+                    </Button>
                   </div>
                 </div>
               </CollapsibleContent>
             </Collapsible>
           </div>
         ))}
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        {/* Pagination buttons can be added here */}
       </div>
     </div>
   );
