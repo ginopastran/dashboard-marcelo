@@ -1,51 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { ColumnDef } from "@tanstack/react-table";
 import { Cliente, Contacto, EtiquetaCiente } from "@prisma/client";
 import Image from "next/image";
 import { Collapsible, CollapsibleContent } from "./collapsible";
 import BoxArrowIcon from "../icons/box-arrow";
-import { ContactTable } from "./contact-table";
-import { ContactColumn } from "@/app/(protected)/clients/components/columns";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { CellAction } from "@/app/(protected)/clients/components/cell-action";
 import { Button } from "./button";
 import { ContactForm } from "@/app/(protected)/clients/[clientId]/components/contact-form";
+import { ContactTable } from "./contact-table";
 
 interface ClienteConEtiquetas extends Cliente {
   label: EtiquetaCiente[];
   contacts: Contacto[];
 }
 
-interface DataTableProps<TData extends { [key: string]: any }, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+interface DataTableProps {
   data: ClienteConEtiquetas[];
-  searchKey: string;
-  formattedData: ContactColumn[];
+  columns: ColumnDef<Contacto>[];
 }
 
-export function DataTable<TData extends { [key: string]: any }, TValue>({
-  columns,
-  data,
-  searchKey,
-  formattedData,
-}: DataTableProps<TData, TValue>) {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+export function DataTable({ data, columns }: DataTableProps) {
   const [openCollapsibles, setOpenCollapsibles] = useState<boolean[]>(
     Array(data.length).fill(false)
   );
-  const [isAdding, setIsAdding] = useState<boolean>(false); // Nuevo estado para manejar el formulario de adición de contactos
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [editingContact, setEditingContact] =
+    useState<Partial<Contacto> | null>(null);
+  const [selectedClient, setSelectedClient] =
+    useState<ClienteConEtiquetas | null>(null);
 
   const toggleCollapsible = (index: number) => {
     setOpenCollapsibles((prev) =>
@@ -53,11 +39,9 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
     );
   };
 
-  const handleSaveContact = async (
-    newContact: Partial<Contacto>,
-    client: ClienteConEtiquetas,
-    clientId: string
-  ) => {
+  const handleSaveContact = async (newContact: Partial<Contacto>) => {
+    if (!selectedClient) return;
+
     try {
       const contactToSave = {
         contact_client_name: newContact.contact_client_name || "",
@@ -72,17 +56,54 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
         contact_other: newContact.contact_other || "",
       };
 
-      await axios.post(`/api/clients/${clientId}/contacts`, contactToSave);
+      if (editingContact && editingContact.id) {
+        await axios.patch(
+          `/api/clients/${selectedClient.id}/contacts/${editingContact.id}`,
+          contactToSave
+        );
+        toast.success("Contacto actualizado exitosamente.");
+      } else {
+        await axios.post(
+          `/api/clients/${selectedClient.id}/contacts`,
+          contactToSave
+        );
+        toast.success("Contacto guardado exitosamente.");
+      }
 
-      toast.success("Contacto guardado exitosamente.");
       // Refrescar los datos o hacer cualquier lógica adicional que necesites
+      setIsAdding(false);
+      setEditingContact(null);
+      setSelectedClient(null);
     } catch (error) {
       toast.error("Error al guardar el contacto.");
       console.log(error);
     }
   };
 
-  const formatDNI = (dni: BigInt) => {
+  const handleEditContact = (
+    contact: Contacto,
+    client: ClienteConEtiquetas
+  ) => {
+    setEditingContact(contact);
+    setSelectedClient(client);
+    setIsAdding(true);
+  };
+
+  const handleDeleteContact = async (
+    contact: Contacto,
+    client: ClienteConEtiquetas
+  ) => {
+    try {
+      await axios.delete(`/api/clients/${client.id}/contacts/${contact.id}`);
+      toast.success("Contacto eliminado exitosamente.");
+      // Refrescar los datos o hacer cualquier lógica adicional que necesites
+    } catch (error) {
+      toast.error("Error al eliminar el contacto.");
+      console.log(error);
+    }
+  };
+
+  const formatDNI = (dni: bigint) => {
     const dniStr = dni.toString();
     return dniStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
@@ -200,23 +221,32 @@ export function DataTable<TData extends { [key: string]: any }, TValue>({
                     <div className=" h-[1px] w-full bg-black/60 mt-6" />
                     <div>
                       <ContactTable
-                        searchKey="name"
                         columns={columns}
-                        data={item.contacts as unknown as TData[]}
+                        data={item.contacts}
+                        onEdit={(contact) => handleEditContact(contact, item)}
+                        onDelete={(contact) =>
+                          handleDeleteContact(contact, item)
+                        }
                       />
                     </div>
                   </div>
                   {isAdding && (
                     <ContactForm
-                      onSave={(newContact) =>
-                        handleSaveContact(newContact, item, item.id)
-                      }
-                      onCancel={() => setIsAdding(false)}
+                      onSave={handleSaveContact}
+                      onCancel={() => {
+                        setIsAdding(false);
+                        setEditingContact(null);
+                      }}
+                      initialData={editingContact}
                     />
                   )}
                   <div className="flex items-center justify-start space-x-2 py-4">
                     <Button
-                      onClick={() => setIsAdding(true)}
+                      onClick={() => {
+                        setIsAdding(true);
+                        setEditingContact(null);
+                        setSelectedClient(item);
+                      }}
                       variant="outline"
                       className="mb-4 border-blue-button border-2 rounded-xl text-blue-button font-semibold text-base px-6 mt-5 hover:bg-blue-button hover:text-white"
                       size={"sm"}

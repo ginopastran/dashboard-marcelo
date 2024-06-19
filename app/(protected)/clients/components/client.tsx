@@ -6,11 +6,11 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ContactColumn, columns } from "./columns";
+import { Cliente, Contacto, EtiquetaCiente } from "@prisma/client";
 import { DataTable } from "@/components/ui/data-table";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClientForm } from "../[clientId]/components/client-form";
-import { Cliente, Contacto, EtiquetaCiente } from "@prisma/client";
+import { columns } from "./columns";
 
 interface ClienteConEtiquetas extends Cliente {
   label: EtiquetaCiente[];
@@ -19,17 +19,11 @@ interface ClienteConEtiquetas extends Cliente {
 
 interface ClientsClientProps {
   data: ClienteConEtiquetas[];
-  formattedData: ContactColumn[];
 }
 
-export const ClientsClient: React.FC<ClientsClientProps> = ({
-  data,
-  formattedData,
-}) => {
+export const ClientsClient: React.FC<ClientsClientProps> = ({ data }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  // console.log(data);
 
   return (
     <>
@@ -52,14 +46,9 @@ export const ClientsClient: React.FC<ClientsClientProps> = ({
           </DialogContent>
         </Dialog>
       </div>
-      {/* <Separator /> */}
-      <DataTable
-        searchKey="name"
-        columns={columns}
-        data={data}
-        formattedData={formattedData}
-      />
-      {/* <Separator /> */}
+      <Separator />
+      <DataTable data={data} columns={columns} />
+      <Separator />
     </>
   );
 };

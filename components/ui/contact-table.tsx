@@ -10,7 +10,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -18,22 +18,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "./table";
+import { Edit, X } from "lucide-react";
+import { AlertModal } from "../modals/alert-modal";
 
 interface ContactTableProps<TData extends { [key: string]: any }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey: string;
+  onEdit: (contact: TData) => void;
+  onDelete: (contact: TData) => void;
 }
 
 export function ContactTable<TData extends { [key: string]: any }, TValue>({
   columns,
   data,
-  searchKey,
+  onEdit,
+  onDelete,
 }: ContactTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [contactToDelete, setContactToDelete] = useState<TData | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const table = useReactTable({
     data,
@@ -47,31 +52,47 @@ export function ContactTable<TData extends { [key: string]: any }, TValue>({
     },
   });
 
-  const inputStyle =
-    " bg-transparent border-0 border-b-[1px] border-black/60 rounded-none px-0 focus-visible:ring-0 w-[80%]";
+  const handleDeleteClick = (contact: TData) => {
+    setContactToDelete(contact);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (contactToDelete) {
+      setLoading(true);
+      await onDelete(contactToDelete);
+      setLoading(false);
+      setIsModalOpen(false);
+      setContactToDelete(null);
+    }
+  };
 
   return (
     <div className="mt-8">
+      <AlertModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        loading={loading}
+      />
       <div className="rounded-md border-none">
         <Table className="border-none">
           <TableHeader className="border-none">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="border-none">
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className="text-heading-blue font-bold text-base border-none"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="text-heading-blue font-bold text-base border-none"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -95,6 +116,14 @@ export function ContactTable<TData extends { [key: string]: any }, TValue>({
                       <div className="h-[1px] w-[80%] bg-black/60 mt-2" />
                     </TableCell>
                   ))}
+                  <TableCell className="text-slate-700 border-none flex gap-2">
+                    <button onClick={() => onEdit(row.original)} className="">
+                      <Edit className=" text-black" />
+                    </button>
+                    <button onClick={() => handleDeleteClick(row.original)}>
+                      <X className=" text-black" />
+                    </button>
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
@@ -110,24 +139,6 @@ export function ContactTable<TData extends { [key: string]: any }, TValue>({
           </TableBody>
         </Table>
       </div>
-
-      {/* <div className="flex gap-2">
-        <Button
-          onClick={handleAdd}
-          variant="outline"
-          className="mb-4 border-blue-button border-2 rounded-xl text-blue-button font-semibold text-base px-6 mt-5 hover:bg-blue-button hover:text-white"
-          size={"sm"}
-        >
-          Añadir contacto
-        </Button>
-        <Button
-          //   onClick={handleAdd}
-          size={"sm"}
-          className="mb-4 bg-blue-button text-white rounded-xl font-semibold text-base px-6 mt-5"
-        >
-          Enviar un correo
-        </Button>
-      </div> */}
     </div>
   );
 }

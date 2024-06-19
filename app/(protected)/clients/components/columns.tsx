@@ -1,25 +1,10 @@
-"use client";
-
 import { ColumnDef } from "@tanstack/react-table";
+import { Contacto } from "@prisma/client";
 
-import { CellAction } from "./cell-action";
-
-export type ContactColumn = {
-  id: string;
-  contact_client_name: string;
-  contact_industry: string;
-  contact_responsible_name: string;
-  contact_job_title: string;
-  contact_contact: bigint;
-  contact_DNI: bigint;
-  contact_email: string;
-  contact_other: string;
-};
-
-export const columns: ColumnDef<ContactColumn>[] = [
+export const columns: ColumnDef<Contacto>[] = [
   {
     accessorKey: "contact_client_name",
-    header: "Nombre",
+    header: "Nombre del Contacto",
   },
   {
     accessorKey: "contact_job_title",
@@ -27,23 +12,18 @@ export const columns: ColumnDef<ContactColumn>[] = [
   },
   {
     accessorKey: "contact_DNI",
-    header: "D.N.I.",
+    header: "DNI",
   },
-
   {
     accessorKey: "contact_contact",
     header: "Contacto",
   },
   {
     accessorKey: "contact_email",
-    header: "Correo",
+    header: "Email",
   },
   {
     accessorKey: "contact_other",
     header: "Otros",
   },
-  // {
-  //   id: "actions",
-  //   cell: ({ row }) => <CellAction data={row.original} />,
-  // },
 ];

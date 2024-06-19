@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
 
-import { ContactColumn } from "./components/columns";
 import { ClientsClient } from "./components/client";
 import { Separator } from "@/components/ui/separator";
 
@@ -17,18 +16,6 @@ const ClientsPage = async ({ params }: { params: { id: string } }) => {
 
   // console.log(clients);
 
-  const formattedClients: ContactColumn[] = clients.map((item) => ({
-    id: item.id,
-    client_name: item.client_name,
-    industry: item.industry,
-    responsible_name: item.responsible_name,
-    job_title: item.job_title,
-    contact: item.contact,
-    DNI: item.DNI,
-    email: item.email || "",
-    other: item.other || "",
-  }));
-
   return (
     <div className="flex-col px-9 bg-secondary-background">
       <nav className=" py-10 flex justify-between w-full pt-20">
@@ -39,7 +26,7 @@ const ClientsPage = async ({ params }: { params: { id: string } }) => {
       {/* <Separator/> */}
       <div className=" h-[1px] w-full bg-black/60 mb-9" />
       <div className="flex-1 space-y-4 py-8 pt-2">
-        <ClientsClient data={clients} formattedData={formattedClients} />
+        <ClientsClient data={clients} />
       </div>
     </div>
   );

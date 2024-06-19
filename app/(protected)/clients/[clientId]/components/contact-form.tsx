@@ -31,26 +31,29 @@ type ContactFormValues = z.infer<typeof formSchema>;
 interface ContactFormProps {
   onSave: (newContact: Partial<Contacto>) => void;
   onCancel: () => void;
+  initialData?: Partial<Contacto> | null;
 }
 
 export const ContactForm: React.FC<ContactFormProps> = ({
   onSave,
   onCancel,
+  initialData,
 }) => {
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      contact_client_name: "",
-      contact_job_title: "",
-      contact_DNI: "",
-      contact_contact: "",
-      contact_email: "",
-      contact_other: "",
+      contact_client_name: initialData?.contact_client_name || "",
+      contact_job_title: initialData?.contact_job_title || "",
+      contact_DNI: initialData?.contact_DNI?.toString() || "",
+      contact_contact: initialData?.contact_contact?.toString() || "",
+      contact_email: initialData?.contact_email || "",
+      contact_other: initialData?.contact_other || "",
     },
   });
 
   const onSubmit = (data: ContactFormValues) => {
     onSave({
+      ...initialData,
       contact_client_name: data.contact_client_name,
       contact_job_title: data.contact_job_title,
       contact_DNI: BigInt(data.contact_DNI || 0),
