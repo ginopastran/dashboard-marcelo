@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import * as z from "zod";
 import axios from "axios";
@@ -34,15 +36,14 @@ const formSchema = z.object({
 type ClientFormValues = z.infer<typeof formSchema>;
 
 interface ClienteConEtiquetas extends Cliente {
-  label: EtiquetaCiente[];
   contacts: Contacto[];
 }
 
 interface PresupuestoConClienteYContactos {
   id: string;
   name: string;
-  clientId: string;
-  contactId?: string; // Ensure contactId is included here
+  clienteId: string;
+  contactId: string | null;
   cliente: ClienteConEtiquetas;
 }
 
@@ -61,7 +62,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedClient, setSelectedClient] = useState<string | null>(
-    initialData?.clientId || null
+    initialData?.clienteId || null
   );
   const [contacts, setContacts] = useState<Contacto[]>(
     initialData?.cliente.contacts || []
@@ -76,7 +77,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      clientId: initialData?.clientId || "",
+      clientId: initialData?.clienteId || "",
       contactId: initialData?.contactId || "", // Ensure this is properly initialized
       name: initialData?.name || "",
     },

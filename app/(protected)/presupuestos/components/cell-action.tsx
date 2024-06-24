@@ -25,10 +25,10 @@ import { useClientModal } from "@/hooks/use-category-modal";
 
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ClientForm } from "../[clientId]/components/client-form";
 import { Cliente, EtiquetaCiente } from "@prisma/client";
 import SetttingsIcon from "@/components/icons/settings";
 import BoxArrowIcon from "@/components/icons/box-arrow";
+import { ClientForm } from "../[presupuestoId]/components/client-form";
 
 interface ClienteConEtiquetas extends Cliente {
   label: EtiquetaCiente[];

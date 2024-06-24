@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Collapsible, CollapsibleContent } from "./collapsible";
 import BoxArrowIcon from "../icons/box-arrow";
 import { Button } from "./button";
+import { useRouter } from "next/navigation";
 
 interface ClienteConContacto extends Cliente {
   contacts: Contacto[];
@@ -21,6 +22,8 @@ interface DataTableProps {
 }
 
 export function PresupuestoDataTable({ data, columns }: DataTableProps) {
+  const router = useRouter();
+
   const [openCollapsibles, setOpenCollapsibles] = useState<boolean[]>(
     Array(data.length).fill(false)
   );
@@ -89,7 +92,7 @@ export function PresupuestoDataTable({ data, columns }: DataTableProps) {
               <div className="flex items-end gap-2">
                 <button
                   className=" text-heading-blue flex items-center text-lg font-semibold"
-                  onClick={() => toggleCollapsible(id)}
+                  onClick={() => router.push(`/presupuestos/${item.id}`)}
                 >
                   <BoxArrowIcon className=" mr-2" /> Ver Información
                 </button>
