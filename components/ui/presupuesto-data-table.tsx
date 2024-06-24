@@ -1,25 +1,22 @@
-"use client";
-
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Cliente, Contacto, EtiquetaCiente, Presupuesto } from "@prisma/client";
+import { Cliente, Contacto, Presupuesto } from "@prisma/client";
 import Image from "next/image";
 import { Collapsible, CollapsibleContent } from "./collapsible";
 import BoxArrowIcon from "../icons/box-arrow";
-import axios from "axios";
-import toast from "react-hot-toast";
-import { CellAction } from "@/app/(protected)/clients/components/cell-action";
 import { Button } from "./button";
-import { ContactForm } from "@/app/(protected)/clients/[clientId]/components/contact-form";
-import { ContactTable } from "./contact-table";
 
-interface PresupuestoConCliente extends Presupuesto {
-  label: EtiquetaCiente[];
+interface ClienteConContacto extends Cliente {
   contacts: Contacto[];
 }
 
+interface PresupuestoConCliente extends Presupuesto {
+  cliente: ClienteConContacto;
+  contact?: Contacto | null;
+}
+
 interface DataTableProps {
-  data: Presupuesto[];
+  data: PresupuestoConCliente[];
   columns: ColumnDef<Contacto>[];
 }
 
@@ -55,31 +52,34 @@ export function PresupuestoDataTable({ data, columns }: DataTableProps) {
           >
             <div className=" flex w-full justify-between">
               <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-5">
-                  <h2 className="font-bold text-heading-blue text-lg">
-                    {item.client_name}
-                  </h2>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-bold text-heading-blue text-lg">
+                      {item.cliente.client_name}
+                    </h2>
+                    <span className=" text-xs font-bold text-gray-700">
+                      N°20
+                    </span>
+                  </div>
+                  <h3 className=" text-heading-blue font-medium">
+                    {item.name}
+                  </h3>
                   <div className="flex gap-1">
-                    {item.label.map((label: EtiquetaCiente) => (
-                      <div
-                        key={label.id}
-                        className="flex bg-label-purple rounded-full items-center gap-1 mr-2"
-                      >
-                        <div className="bg-white h-3 w-3 rounded-full items-start ml-1" />
-                        <p className="text-white text-sm mr-1">{label.name}</p>
-                      </div>
-                    ))}
+                    <div className="flex bg-label-purple rounded-full items-center gap-1 mr-2">
+                      <div className="bg-white h-3 w-3 rounded-full items-start ml-1" />
+                      <p className="text-white text-xs mr-1">{item.state}</p>
+                    </div>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="flex gap-1">
-                    <p className="font-bold text-heading-blue">Industria:</p>
+                    <p className="font-bold text-heading-blue">Responsable:</p>
                     <span className="text-heading-blue font-medium">
-                      {item.industry}
+                      {item.contact?.contact_client_name || "Sin contacto"}
                     </span>
                   </div>
                   <div className="flex gap-1">
-                    <p className="font-bold text-heading-blue">Ingresó el</p>
+                    <p className="font-bold text-heading-blue">Creado el</p>
                     <span className="text-heading-blue font-medium">
                       {new Date(item.createdAt).toLocaleDateString()}
                     </span>
@@ -93,7 +93,6 @@ export function PresupuestoDataTable({ data, columns }: DataTableProps) {
                 >
                   <BoxArrowIcon className=" mr-2" /> Ver Información
                 </button>
-                <CellAction data={item} />
               </div>
               <div className="flex items-center">
                 <Image
@@ -114,19 +113,21 @@ export function PresupuestoDataTable({ data, columns }: DataTableProps) {
                           Responsable:
                         </p>
                         <span className="text-heading-blue font-medium">
-                          {item.responsible_name}
+                          {item.contact?.contact_client_name || "Sin contacto"}
                         </span>
                       </div>
                       <div className="flex gap-1">
                         <p className="font-bold text-heading-blue">Cargo:</p>
                         <span className="text-heading-blue font-medium">
-                          {item.job_title}
+                          {item.contact?.contact_job_title || "Sin contacto"}
                         </span>
                       </div>
                       <div className="flex gap-1">
                         <p className="font-bold text-heading-blue">DNI:</p>
                         <span className="text-heading-blue font-medium">
-                          {formatDNI(item.DNI)}
+                          {item.contact?.contact_DNI
+                            ? formatDNI(item.contact.contact_DNI)
+                            : "Sin contacto"}
                         </span>
                       </div>
                     </div>
@@ -134,49 +135,77 @@ export function PresupuestoDataTable({ data, columns }: DataTableProps) {
                       <div className="flex gap-1">
                         <p className="font-bold text-heading-blue">Contacto:</p>
                         <span className="text-heading-blue font-medium">
-                          +{item.contact.toString()}
+                          {item.contact?.contact_contact
+                            ? `+${item.contact.contact_contact.toString()}`
+                            : "Sin contacto"}
                         </span>
                       </div>
                       <div className="flex gap-1">
                         <p className="font-bold text-heading-blue">Correo:</p>
                         <span className="text-heading-blue font-medium">
-                          {item.email}
+                          {item.contact?.contact_email || "Sin contacto"}
                         </span>
                       </div>
                       <div className="flex gap-1">
                         <p className="font-bold text-heading-blue">Otros:</p>
                         <span className="text-heading-blue font-medium">
-                          {item.other}
+                          {item.contact?.contact_other || "Sin contacto"}
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div className=" mt-10">
-                    <h2 className="font-semibold text-heading-blue text-lg">
-                      OTROS CONTACTOS
-                    </h2>
-                    <div className=" h-[1px] w-full bg-black/60 mt-6" />
-                    <div>
-                      <ContactTable
-                        columns={columns}
-                        data={item.contacts}
-                        onEdit={(contact) => handleEditContact(contact, item)}
-                        onDelete={(contact) =>
-                          handleDeleteContact(contact, item)
-                        }
-                      />
+                    <div className=" mt-10">
+                      <h2 className="font-semibold text-heading-blue text-lg">
+                        OTROS CONTACTOS
+                      </h2>
+                      <div className=" h-[1px] w-full bg-black/60 mt-6" />
+                      <div className="flex flex-col gap-3">
+                        {item.cliente.contacts.map((contact) => (
+                          <div key={contact.id} className="flex gap-4">
+                            <div className="flex gap-1">
+                              <p className="font-bold text-heading-blue">
+                                Nombre:
+                              </p>
+                              <span className="text-heading-blue font-medium">
+                                {contact.contact_client_name}
+                              </span>
+                            </div>
+                            <div className="flex gap-1">
+                              <p className="font-bold text-heading-blue">
+                                Cargo:
+                              </p>
+                              <span className="text-heading-blue font-medium">
+                                {contact.contact_job_title}
+                              </span>
+                            </div>
+                            <div className="flex gap-1">
+                              <p className="font-bold text-heading-blue">
+                                DNI:
+                              </p>
+                              <span className="text-heading-blue font-medium">
+                                {formatDNI(contact.contact_DNI)}
+                              </span>
+                            </div>
+                            <div className="flex gap-1">
+                              <p className="font-bold text-heading-blue">
+                                Contacto:
+                              </p>
+                              <span className="text-heading-blue font-medium">
+                                +{contact.contact_contact.toString()}
+                              </span>
+                            </div>
+                            <div className="flex gap-1">
+                              <p className="font-bold text-heading-blue">
+                                Correo:
+                              </p>
+                              <span className="text-heading-blue font-medium">
+                                {contact.contact_email}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  {isAdding && (
-                    <ContactForm
-                      onSave={handleSaveContact}
-                      onCancel={() => {
-                        setIsAdding(false);
-                        setEditingContact(null);
-                      }}
-                      initialData={editingContact}
-                    />
-                  )}
                   <div className="flex items-center justify-start space-x-2 py-4">
                     <Button
                       onClick={() => {

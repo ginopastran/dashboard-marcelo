@@ -14,13 +14,16 @@ import { columns } from "./columns";
 import { ClientForm } from "../[presupuestoId]/components/client-form";
 import { PresupuestoDataTable } from "@/components/ui/presupuesto-data-table";
 
-// interface ClienteConEtiquetas extends Cliente {
-//   label: EtiquetaCiente[];
-//   contacts: Contacto[];
-// }
+interface ClienteConContacto extends Cliente {
+  contacts: Contacto[];
+}
+
+interface PresupuestoConCliente extends Presupuesto {
+  cliente: ClienteConContacto;
+}
 
 interface PresupuestoClientProps {
-  data: Presupuesto[];
+  data: PresupuestoConCliente[];
 }
 
 export const PresupuestoClient: React.FC<PresupuestoClientProps> = ({

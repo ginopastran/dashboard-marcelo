@@ -129,7 +129,7 @@ export function ClientDataTable({ data, columns }: DataTableProps) {
                         className="flex bg-label-purple rounded-full items-center gap-1 mr-2"
                       >
                         <div className="bg-white h-3 w-3 rounded-full items-start ml-1" />
-                        <p className="text-white text-sm mr-1">{label.name}</p>
+                        <p className="text-white text-xs mr-1">{label.name}</p>
                       </div>
                     ))}
                   </div>

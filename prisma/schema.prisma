@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -80,15 +79,16 @@ model Cliente {
 }
 
 model Contacto {
-  id                  String  @id @default(cuid())
+  id                  String        @id @default(cuid())
   contact_client_name String
   contact_job_title   String
   contact_DNI         BigInt
   contact_contact     BigInt
-  contact_email       String? @unique
+  contact_email       String?       @unique
   contact_other       String?
   clienteId           String
-  cliente             Cliente @relation("ContactoCliente", fields: [clienteId], references: [id])
+  cliente             Cliente       @relation("ContactoCliente", fields: [clienteId], references: [id])
+  presupuestos        Presupuesto[] // Relación inversa, no se especifica fields ni references aquí
 }
 
 model EtiquetaCiente {
@@ -98,30 +98,34 @@ model EtiquetaCiente {
 }
 
 enum EstadoPresupuesto {
-  OPORTUNIDAD
-  ADJUDICADO
-  RECHAZADO
+  Oportunidad
+  Adjudicado
+  Rechazado
 }
 
 model Presupuesto {
   id                    String                   @id @default(cuid())
   name                  String
-  state                 EstadoPresupuesto
+  state                 EstadoPresupuesto?
   clienteId             String
   cliente               Cliente                  @relation(fields: [clienteId], references: [id])
-  recepcion             DateTime
-  via_recepcion         String
-  detalle               String
-  licitacion            DateTime
-  locacion              String
-  sector                String
-  relevado              String
-  respuesta_presupuesto String
-  revision              String
-  importe               BigInt
-  numero_presupuesto    BigInt
-  via_envio             String
+  contactId             String?
+  contact               Contacto?                @relation(fields: [contactId], references: [id])
+  recepcion             DateTime?
+  via_recepcion         String?
+  detalle               String?
+  licitacion            DateTime?
+  locacion              String?
+  sector                String?
+  relevado              String?
+  respuesta_presupuesto String?
+  revision              String?
+  importe               BigInt?
+  numero_presupuesto    BigInt?
+  via_envio             String?
   seguimientos          SeguimientoPresupuesto[]
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
 }
 
 model SeguimientoPresupuesto {
