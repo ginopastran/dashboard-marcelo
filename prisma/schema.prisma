@@ -104,8 +104,31 @@ enum EstadoPresupuesto {
 }
 
 model Presupuesto {
-  id        String            @id @default(cuid())
-  state     EstadoPresupuesto
-  clienteId String
-  cliente   Cliente           @relation(fields: [clienteId], references: [id])
+  id                    String                   @id @default(cuid())
+  name                  String
+  state                 EstadoPresupuesto
+  clienteId             String
+  cliente               Cliente                  @relation(fields: [clienteId], references: [id])
+  recepcion             DateTime
+  via_recepcion         String
+  detalle               String
+  licitacion            DateTime
+  locacion              String
+  sector                String
+  relevado              String
+  respuesta_presupuesto String
+  revision              String
+  importe               BigInt
+  numero_presupuesto    BigInt
+  via_envio             String
+  seguimientos          SeguimientoPresupuesto[]
+}
+
+model SeguimientoPresupuesto {
+  id            String      @id @default(cuid())
+  descripcion   String
+  archivoURL    String
+  presupuestoId String
+  presupuesto   Presupuesto @relation(fields: [presupuestoId], references: [id])
+  createdAt     DateTime    @default(now())
 }

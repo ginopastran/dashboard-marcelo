@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Cliente, Contacto, EtiquetaCiente } from "@prisma/client";
+import { Cliente, Contacto, EtiquetaCiente, Presupuesto } from "@prisma/client";
 import Image from "next/image";
 import { Collapsible, CollapsibleContent } from "./collapsible";
 import BoxArrowIcon from "../icons/box-arrow";
@@ -13,94 +13,31 @@ import { Button } from "./button";
 import { ContactForm } from "@/app/(protected)/clients/[clientId]/components/contact-form";
 import { ContactTable } from "./contact-table";
 
-interface ClienteConEtiquetas extends Cliente {
+interface PresupuestoConCliente extends Presupuesto {
   label: EtiquetaCiente[];
   contacts: Contacto[];
 }
 
 interface DataTableProps {
-  data: ClienteConEtiquetas[];
+  data: Presupuesto[];
   columns: ColumnDef<Contacto>[];
 }
 
-export function DataTable({ data, columns }: DataTableProps) {
+export function PresupuestoDataTable({ data, columns }: DataTableProps) {
   const [openCollapsibles, setOpenCollapsibles] = useState<boolean[]>(
     Array(data.length).fill(false)
   );
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [editingContact, setEditingContact] =
     useState<Partial<Contacto> | null>(null);
-  const [selectedClient, setSelectedClient] =
-    useState<ClienteConEtiquetas | null>(null);
+  const [selectedClient, setSelectedClient] = useState<Presupuesto | null>(
+    null
+  );
 
   const toggleCollapsible = (index: number) => {
     setOpenCollapsibles((prev) =>
       prev.map((state, i) => (i === index ? !state : state))
     );
-  };
-
-  const handleSaveContact = async (newContact: Partial<Contacto>) => {
-    if (!selectedClient) return;
-
-    try {
-      const contactToSave = {
-        contact_client_name: newContact.contact_client_name || "",
-        contact_job_title: newContact.contact_job_title || "",
-        contact_DNI: newContact.contact_DNI
-          ? newContact.contact_DNI.toString()
-          : "0",
-        contact_contact: newContact.contact_contact
-          ? newContact.contact_contact.toString()
-          : "0",
-        contact_email: newContact.contact_email || "",
-        contact_other: newContact.contact_other || "",
-      };
-
-      if (editingContact && editingContact.id) {
-        await axios.patch(
-          `/api/clients/${selectedClient.id}/contacts/${editingContact.id}`,
-          contactToSave
-        );
-        toast.success("Contacto actualizado exitosamente.");
-      } else {
-        await axios.post(
-          `/api/clients/${selectedClient.id}/contacts`,
-          contactToSave
-        );
-        toast.success("Contacto guardado exitosamente.");
-      }
-
-      // Refrescar los datos o hacer cualquier lógica adicional que necesites
-      setIsAdding(false);
-      setEditingContact(null);
-      setSelectedClient(null);
-    } catch (error) {
-      toast.error("Error al guardar el contacto.");
-      console.log(error);
-    }
-  };
-
-  const handleEditContact = (
-    contact: Contacto,
-    client: ClienteConEtiquetas
-  ) => {
-    setEditingContact(contact);
-    setSelectedClient(client);
-    setIsAdding(true);
-  };
-
-  const handleDeleteContact = async (
-    contact: Contacto,
-    client: ClienteConEtiquetas
-  ) => {
-    try {
-      await axios.delete(`/api/clients/${client.id}/contacts/${contact.id}`);
-      toast.success("Contacto eliminado exitosamente.");
-      // Refrescar los datos o hacer cualquier lógica adicional que necesites
-    } catch (error) {
-      toast.error("Error al eliminar el contacto.");
-      console.log(error);
-    }
   };
 
   const formatDNI = (dni: bigint) => {

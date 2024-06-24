@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Cliente, Contacto, EtiquetaCiente } from "@prisma/client";
-import { DataTable } from "@/components/ui/data-table";
+import { ClientDataTable } from "@/components/ui/client-data-table";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClientForm } from "../[clientId]/components/client-form";
 import { columns } from "./columns";
@@ -46,9 +46,7 @@ export const ClientsClient: React.FC<ClientsClientProps> = ({ data }) => {
           </DialogContent>
         </Dialog>
       </div>
-      <Separator />
-      <DataTable data={data} columns={columns} />
-      <Separator />
+      <ClientDataTable data={data} columns={columns} />
     </>
   );
 };
