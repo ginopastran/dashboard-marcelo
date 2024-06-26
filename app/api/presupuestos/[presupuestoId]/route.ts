@@ -23,6 +23,12 @@ export async function PATCH(
       locacion,
       sector,
       contact_contact,
+      relevado,
+      respuesta_presupuesto,
+      revision,
+      importe,
+      numero_presupuesto,
+      via_envio,
     } = body;
     const { presupuestoId } = params;
 
@@ -60,6 +66,17 @@ export async function PATCH(
             : existingPresupuesto.licitacion,
         locacion: locacion || existingPresupuesto.locacion,
         sector: sector || existingPresupuesto.sector,
+        relevado: relevado || existingPresupuesto.relevado,
+        respuesta_presupuesto:
+          respuesta_presupuesto || existingPresupuesto.respuesta_presupuesto,
+        revision: revision || existingPresupuesto.revision,
+        importe:
+          importe !== undefined ? BigInt(importe) : existingPresupuesto.importe,
+        numero_presupuesto:
+          numero_presupuesto !== undefined
+            ? BigInt(numero_presupuesto)
+            : existingPresupuesto.numero_presupuesto,
+        via_envio: via_envio || existingPresupuesto.via_envio,
       },
       include: {
         cliente: {

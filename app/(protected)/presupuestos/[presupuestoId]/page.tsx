@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { PresupuestoCard } from "./components/presupuesto-card";
 import Link from "next/link";
 import { ResponsableCard } from "./components/responsable-card";
+import { InfoPresupuestoCard } from "./components/info-presupuesto-card";
 
 const PresupuestoPage = async ({
   params,
@@ -63,7 +64,10 @@ const PresupuestoPage = async ({
         {presupuesto ? (
           <>
             <PresupuestoCard data={presupuesto} clients={clients} />
-            <ResponsableCard data={presupuesto} clients={clients} />
+            <div className="flex w-full justify-between gap-10">
+              <ResponsableCard data={presupuesto} clients={clients} />
+              <InfoPresupuestoCard data={presupuesto} clients={clients} />
+            </div>
           </>
         ) : (
           <p className="text-center text-gray-500">

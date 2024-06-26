@@ -116,9 +116,9 @@ export const ResponsableCard: React.FC<PresupuestoClientProps> = ({
   });
 
   return (
-    <div>
-      <div className="mt-12">
-        <div className="bg-white px-7 py-5 rounded-3xl mb-3 w-1/2 flex shadow-lg justify-between flex-col min-h-96">
+    <div className="w-full">
+      <div className="mt-3">
+        <div className="bg-white px-7 py-5 rounded-3xl mb-3 w-full flex shadow-lg justify-between flex-col min-h-96">
           <div className="flex w-full h-full justify-between">
             <div className="flex flex-col gap-3 w-full">
               <div className="flex items-center gap-4">
