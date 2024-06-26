@@ -12,6 +12,7 @@ import { CellAction } from "@/app/(protected)/clients/components/cell-action";
 import { Button } from "./button";
 import { ContactForm } from "@/app/(protected)/clients/[clientId]/components/contact-form";
 import { ContactTable } from "./contact-table";
+import { useRouter } from "next/navigation";
 
 interface ClienteConEtiquetas extends Cliente {
   label: EtiquetaCiente[];
@@ -24,6 +25,7 @@ interface DataTableProps {
 }
 
 export function ClientDataTable({ data, columns }: DataTableProps) {
+  const router = useRouter();
   const [openCollapsibles, setOpenCollapsibles] = useState<boolean[]>(
     Array(data.length).fill(false)
   );
@@ -74,6 +76,7 @@ export function ClientDataTable({ data, columns }: DataTableProps) {
       setIsAdding(false);
       setEditingContact(null);
       setSelectedClient(null);
+      router.refresh();
     } catch (error) {
       toast.error("Error al guardar el contacto.");
       console.log(error);
@@ -96,6 +99,7 @@ export function ClientDataTable({ data, columns }: DataTableProps) {
     try {
       await axios.delete(`/api/clients/${client.id}/contacts/${contact.id}`);
       toast.success("Contacto eliminado exitosamente.");
+      router.refresh();
       // Refrescar los datos o hacer cualquier lógica adicional que necesites
     } catch (error) {
       toast.error("Error al eliminar el contacto.");
@@ -126,10 +130,10 @@ export function ClientDataTable({ data, columns }: DataTableProps) {
                     {item.label.map((label: EtiquetaCiente) => (
                       <div
                         key={label.id}
-                        className="flex bg-label-purple rounded-full items-center gap-1 mr-2"
+                        className="flex bg-label-purple rounded-full items-center gap-1 mr-2 py-[2px]"
                       >
                         <div className="bg-white h-3 w-3 rounded-full items-start ml-1" />
-                        <p className="text-white text-xs mr-1">{label.name}</p>
+                        <p className="text-white text-xs mr-2">{label.name}</p>
                       </div>
                     ))}
                   </div>

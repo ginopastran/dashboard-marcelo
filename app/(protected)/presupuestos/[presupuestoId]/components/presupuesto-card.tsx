@@ -13,7 +13,7 @@ import { columns } from "../../components/columns";
 import BoxArrowIcon from "@/components/icons/box-arrow";
 import Image from "next/image";
 import SetttingsIcon from "@/components/icons/settings";
-import { ClientForm } from "./client-form";
+import { PresupuestoForm } from "./client-form";
 
 interface ClienteConContacto extends Cliente {
   contacts: Contacto[];
@@ -53,9 +53,9 @@ export const PresupuestoCard: React.FC<PresupuestoClientProps> = ({
                 </div>
                 <h3 className=" text-heading-blue font-medium">{data.name}</h3>
                 <div className="flex gap-1">
-                  <div className="flex bg-label-purple rounded-full items-center gap-1 mr-2">
+                  <div className="flex bg-label-purple rounded-full items-center gap-1 mr-2 py-[2px]">
                     <div className="bg-white h-3 w-3 rounded-full items-start ml-1" />
-                    <p className="text-white text-xs mr-1">{data.state}</p>
+                    <p className="text-white text-xs mr-2">{data.state}</p>
                   </div>
                 </div>
               </div>
@@ -82,7 +82,7 @@ export const PresupuestoCard: React.FC<PresupuestoClientProps> = ({
                   </button>
                 </DialogTrigger>
                 <DialogContent className=" max-w-4xl p-0 border-0 gap-0 rounded-3xl min-h-[60vh]">
-                  <ClientForm
+                  <PresupuestoForm
                     initialData={data}
                     clients={clients} // Pass the clients prop here
                     onClose={() => setIsDialogOpen(false)}

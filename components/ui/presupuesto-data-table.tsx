@@ -56,11 +56,11 @@ export function PresupuestoDataTable({ data, columns }: DataTableProps) {
             <div className=" flex w-full justify-between">
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-bold text-heading-blue text-lg">
+                  <div className="flex items-end gap-2">
+                    <h2 className="font-bold text-heading-blue text-xl">
                       {item.cliente.client_name}
                     </h2>
-                    <span className=" text-xs font-bold text-gray-700">
+                    <span className=" text-xs font-bold text-gray-700 leading-6">
                       N°20
                     </span>
                   </div>
@@ -68,9 +68,9 @@ export function PresupuestoDataTable({ data, columns }: DataTableProps) {
                     {item.name}
                   </h3>
                   <div className="flex gap-1">
-                    <div className="flex bg-label-purple rounded-full items-center gap-1 mr-2">
+                    <div className="flex bg-label-purple rounded-full items-center gap-1 mr-2 py-[2px]">
                       <div className="bg-white h-3 w-3 rounded-full items-start ml-1" />
-                      <p className="text-white text-xs mr-1">{item.state}</p>
+                      <p className="text-white text-xs mr-2">{item.state}</p>
                     </div>
                   </div>
                 </div>

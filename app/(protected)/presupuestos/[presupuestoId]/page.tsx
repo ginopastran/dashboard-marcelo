@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { PresupuestoCard } from "./components/presupuesto-card";
 import Link from "next/link";
+import { ResponsableCard } from "./components/responsable-card";
 
 const PresupuestoPage = async ({
   params,
@@ -58,9 +59,12 @@ const PresupuestoPage = async ({
         </div>
       </nav>
       <div className=" h-[1px] w-full bg-black/60 mb-9" />
-      <div className="flex-1 space-y-4">
+      <div className="flex-1 space-y-6">
         {presupuesto ? (
-          <PresupuestoCard data={presupuesto} clients={clients} />
+          <>
+            <PresupuestoCard data={presupuesto} clients={clients} />
+            <ResponsableCard data={presupuesto} clients={clients} />
+          </>
         ) : (
           <p className="text-center text-gray-500">
             Presupuesto no encontrado.

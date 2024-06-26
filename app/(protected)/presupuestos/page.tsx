@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PresupuestoClient } from "./components/client";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ClientForm } from "./[presupuestoId]/components/client-form";
 import Heading from "./components/heading";
 
 const PresupuestoPage = async ({ params }: { params: { id: string } }) => {
