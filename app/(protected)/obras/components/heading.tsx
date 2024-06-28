@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import React, { useState } from "react";
-import { ObraForm } from "../[presupuestoId]/components/obra-form";
+import { ObraForm } from "../[obraId]/components/obra-form";
 import { Cliente, Contacto, EtiquetaCiente } from "@prisma/client";
 
 interface ClienteConEtiquetas extends Cliente {

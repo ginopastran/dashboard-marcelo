@@ -63,28 +63,28 @@ export const Navigation = () => {
   const getLinkClass = (linkPath: string) => {
     return cn(
       "flex items-center text-slate-400 font-semibold text-base",
-      pathname === linkPath && "text-slate-800"
+      pathname.startsWith(linkPath) && "text-slate-800"
     );
   };
 
   const getLinkClassSvg = (linkPath: string) => {
     return cn(
       "mr-3 stroke-slate-400",
-      pathname === linkPath && "mr-3 stroke-slate-800"
+      pathname.startsWith(linkPath) && "mr-3 stroke-slate-800"
     );
   };
 
   const getLinkClassNotificationCircleSvg = (linkPath: string) => {
     return cn(
       "mr-3 stroke-slate-400 fill-slate-400",
-      pathname === linkPath && "mr-3 stroke-slate-800 fill-slate-800"
+      pathname.startsWith(linkPath) && "mr-3 stroke-slate-800 fill-slate-800"
     );
   };
 
   const getLinkClassNotificationPathSvg = (linkPath: string) => {
     return cn(
       "mr-3 fill-slate-400",
-      pathname === linkPath && "mr-3 fill-slate-800"
+      pathname.startsWith(linkPath) && "mr-3 fill-slate-800"
     );
   };
 

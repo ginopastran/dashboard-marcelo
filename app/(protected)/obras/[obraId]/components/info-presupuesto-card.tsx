@@ -3,17 +3,17 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Cliente, Contacto, Presupuesto } from "@prisma/client";
+import { Cliente, Contacto, Obra } from "@prisma/client";
 
 import toast from "react-hot-toast";
 import axios from "axios";
-import { InfoPresupuestoForm } from "./info-presupuesto-form";
+import { InfoObraForm } from "./info-presupuesto-form";
 
 interface ClienteConContacto extends Cliente {
   contacts: Contacto[];
 }
 
-interface PresupuestoConCliente extends Presupuesto {
+interface ObraConCliente extends Obra {
   cliente: ClienteConContacto;
   contact: Contacto | null;
   clienteId: string;
@@ -21,7 +21,7 @@ interface PresupuestoConCliente extends Presupuesto {
 }
 
 interface InfoPresupuestoProps {
-  data: PresupuestoConCliente;
+  data: ObraConCliente;
   clients: ClienteConContacto[]; // Ensure you have clients as a prop
 }
 
@@ -32,16 +32,30 @@ export const InfoPresupuestoCard: React.FC<InfoPresupuestoProps> = ({
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleSave = async (newData: Partial<PresupuestoConCliente>) => {
+  interface InfoObraFormValues {
+    numero_obra?: bigint | null;
+    numero_presupuesto?: bigint | null;
+    importe?: bigint | null;
+    oc?: bigint | null;
+    url?: string;
+    fecha?: Date | null;
+    saldo?: bigint | null;
+    porcentajePendiente?: number;
+  }
+
+  const handleSave = async (newData: Partial<InfoObraFormValues>) => {
     try {
       // Convert BigInt fields to strings
       const preparedData = {
         ...newData,
         importe: newData.importe?.toString(),
         numero_presupuesto: newData.numero_presupuesto?.toString(),
+        numero_obra: newData.numero_obra?.toString(),
+        oc: newData.oc?.toString(),
+        saldo: newData.saldo?.toString(),
       };
 
-      const response = await fetch(`/api/presupuestos/${data.id}`, {
+      const response = await fetch(`/api/obras/${data.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -61,33 +75,31 @@ export const InfoPresupuestoCard: React.FC<InfoPresupuestoProps> = ({
     }
   };
 
+  const transformData = (
+    data: ObraConCliente
+  ): Partial<InfoObraFormValues> => ({
+    numero_obra: data.numero_obra,
+    numero_presupuesto: data.numero_presupuesto,
+    importe: data.importe,
+    oc: data.oc,
+    url: data.url || undefined,
+    fecha: data.fecha,
+    saldo: data.saldo,
+    porcentajePendiente:
+      data.porcentajePendiente !== null ? data.porcentajePendiente : undefined,
+  });
+
   const handleCancel = () => {
     setIsDialogOpen(false);
   };
 
-  const transformData = (data: PresupuestoConCliente) => ({
-    relevado: data.relevado || "",
-    respuesta_presupuesto: data.respuesta_presupuesto || "",
-    revision: data.revision || "",
-    importe: data.importe || undefined,
-    numero_presupuesto: data.numero_presupuesto || undefined,
-    via_envio: data.via_envio || "",
-  });
-
   return (
     <div className="w-full">
       <div className="mt-3">
-        <div className="bg-white px-7 py-5 rounded-3xl mb-3 w-full flex shadow-lg justify-between flex-col min-h-96">
+        <div className="bg-white px-7 py-5 rounded-3xl mb-3 w-full flex h-full shadow-lg justify-between flex-col ">
           <div className="flex w-full h-full justify-between">
             <div className="flex flex-col gap-3 w-full">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-bold text-heading-blue text-2xl">
-                    Presupuesto
-                  </h2>
-                </div>
-              </div>
-              <InfoPresupuestoForm
+              <InfoObraForm
                 onSave={handleSave}
                 onCancel={handleCancel}
                 initialData={transformData(data)}

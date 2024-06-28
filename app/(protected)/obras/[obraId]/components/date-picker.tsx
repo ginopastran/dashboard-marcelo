@@ -26,7 +26,7 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
   disabled,
 }) => {
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-2  w-full">
       <label
         className={cn(
           `text-lg font-semibold text-heading-blue ${
@@ -40,9 +40,9 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
         <PopoverTrigger asChild>
           <Button
             className={cn(
-              "min-w-[200px] justify-start text-left font-normal bg-transparent border-b-[1px] border-black rounded-none px-0 py-0 hover:bg-transparent text-black",
+              "w-full justify-start text-left font-normal bg-transparent border-b-[1px] border-black rounded-none px-0 py-0 hover:bg-transparent text-black",
               !value && "text-muted-foreground",
-              disabled && "cursor-not-allowed border-b-[1px] border-gray-600"
+              disabled && "cursor-not-allowed border-b-[1px] border-gray-900"
             )}
             disabled={disabled}
           >

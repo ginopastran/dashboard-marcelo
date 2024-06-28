@@ -6,7 +6,7 @@ import { ObraClient } from "./components/client";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import Heading from "./components/heading";
 
-const PresupuestoPage = async ({ params }: { params: { id: string } }) => {
+const ObrasPage = async ({ params }: { params: { id: string } }) => {
   const clients = await db.cliente.findMany({
     include: { label: true, contacts: true },
     orderBy: {
@@ -41,4 +41,4 @@ const PresupuestoPage = async ({ params }: { params: { id: string } }) => {
   );
 };
 
-export default PresupuestoPage;
+export default ObrasPage;

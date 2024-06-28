@@ -106,9 +106,8 @@ enum EstadoPresupuesto {
 }
 
 enum EstadoObra {
-  Oportunidad
   SinComenzar
-  Rechazado
+  EnProceso
   Finalizado
 }
 
@@ -153,12 +152,12 @@ model Obra {
   name                String
   numero_obra         BigInt
   numero_presupuesto  BigInt?
-  importe             BigInt
-  oc                  BigInt
-  url                 String
-  fecha               DateTime
+  importe             BigInt?
+  oc                  BigInt?
+  url                 String?
+  fecha               DateTime?
   saldo               BigInt?
-  porcentajePendiente Int
+  porcentajePendiente Int?
   state               EstadoObra
   clienteId           String
   cliente             Cliente           @relation("ClienteObras", fields: [clienteId], references: [id])

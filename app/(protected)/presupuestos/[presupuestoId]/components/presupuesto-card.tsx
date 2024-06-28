@@ -13,6 +13,16 @@ import { columns } from "../../components/columns";
 import BoxArrowIcon from "@/components/icons/box-arrow";
 import Image from "next/image";
 import SetttingsIcon from "@/components/icons/settings";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
 import { PresupuestoForm } from "./presupuesto-form";
 
 interface ClienteConContacto extends Cliente {
@@ -31,12 +41,55 @@ interface PresupuestoClientProps {
   clients: ClienteConContacto[]; // Ensure you have clients as a prop
 }
 
+const stateMapping: { [key: string]: string } = {
+  Oportunidad: "Oportunidad",
+  Adjudicado: "Adjudicado",
+  Rechazado: "Rechazado",
+};
+
 export const PresupuestoCard: React.FC<PresupuestoClientProps> = ({
   data,
   clients,
 }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleStateChange = async (id: string, newState: string) => {
+    const mappedState = stateMapping[newState];
+    try {
+      const response = await fetch(`/api/presupuestos/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ state: mappedState }),
+      });
+
+      if (response.ok) {
+        toast.success("Estado actualizado correctamente.");
+        router.refresh();
+      } else {
+        toast.error("Error actualizando el estado");
+      }
+    } catch (error) {
+      console.error("Error updating state:", error);
+    }
+  };
+
+  const states = Object.keys(stateMapping);
+
+  const getBgColorClass = (state: string | null | undefined) => {
+    switch (state) {
+      case "Oportunidad":
+        return "bg-label-purple";
+      case "Adjudicado":
+        return "bg-green-500";
+      case "Rechazado":
+        return "bg-red-500";
+      default:
+        return "bg-label-purple";
+    }
+  };
 
   return (
     <div>
@@ -53,9 +106,43 @@ export const PresupuestoCard: React.FC<PresupuestoClientProps> = ({
                 </div>
                 <h3 className=" text-heading-blue font-medium">{data.name}</h3>
                 <div className="flex gap-1">
-                  <div className="flex bg-label-purple rounded-full items-center gap-1 mr-2 py-[2px]">
-                    <div className="bg-white h-3 w-3 rounded-full items-start ml-1" />
-                    <p className="text-white text-xs mr-2">{data.state}</p>
+                  <div
+                    className={cn(
+                      "flex rounded-full items-center gap-1 mr-2 py-[2px]",
+                      getBgColorClass(data.state)
+                    )}
+                  >
+                    <div className="bg-white h-2 w-2 rounded-full items-start ml-1" />
+                    <Select
+                      value={
+                        Object.keys(stateMapping).find(
+                          (key) => stateMapping[key] === data.state
+                        ) || "Oportunidad"
+                      }
+                      onValueChange={(newState) =>
+                        handleStateChange(data.id, newState)
+                      }
+                    >
+                      <SelectTrigger className="text-white text-xs mr-2 p-0 py-2 border-none m-0 h-2 focus:ring-0 font-semibold">
+                        <SelectValue
+                          placeholder={
+                            Object.keys(stateMapping).find(
+                              (key) => stateMapping[key] === data.state
+                            ) || "Oportunidad"
+                          }
+                          className=" p-0 border-none m-0"
+                        />
+                      </SelectTrigger>
+                      <SelectContent className="">
+                        <SelectGroup>
+                          {states.map((state) => (
+                            <SelectItem key={state} value={state}>
+                              {state}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>

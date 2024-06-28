@@ -16,12 +16,10 @@ import {
 } from "@/components/ui/form";
 import { EditIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DatePickerField } from "./date-picker";
 
 const formSchema = z.object({
-  relevado: z.string().optional(),
-  respuesta_presupuesto: z.string().optional(),
-  revision: z.string().optional(),
-  importe: z.preprocess(
+  numero_obra: z.preprocess(
     (val) => (val === "" ? undefined : BigInt(val as string)),
     z.bigint().nullable().optional()
   ),
@@ -29,30 +27,46 @@ const formSchema = z.object({
     (val) => (val === "" ? undefined : BigInt(val as string)),
     z.bigint().nullable().optional()
   ),
-  via_envio: z.string().optional(),
+  importe: z.preprocess(
+    (val) => (val === "" ? undefined : BigInt(val as string)),
+    z.bigint().nullable().optional()
+  ),
+  oc: z.preprocess(
+    (val) => (val === "" ? undefined : BigInt(val as string)),
+    z.bigint().nullable().optional()
+  ),
+  url: z.string().optional(),
+  fecha: z.date().nullable().optional(),
+  saldo: z.preprocess(
+    (val) => (val === "" ? undefined : BigInt(val as string)),
+    z.bigint().nullable().optional()
+  ),
+  porcentajePendiente: z
+    .preprocess((val) => (val === "" ? undefined : Number(val)), z.number())
+    .optional(),
 });
 
-type InfoPresupuestoFormValues = z.infer<typeof formSchema>;
+type InfoObraFormValues = z.infer<typeof formSchema>;
 
-interface InfoPresupuestoFormProps {
-  onSave: (newData: Partial<InfoPresupuestoFormValues>) => void;
+interface InfoObraFormProps {
+  onSave: (newData: Partial<InfoObraFormValues>) => void;
   onCancel: () => void;
-  initialData?: Partial<InfoPresupuestoFormValues> | null;
+  initialData?: Partial<InfoObraFormValues> | null;
 }
 
-export const InfoPresupuestoForm: React.FC<InfoPresupuestoFormProps> = ({
+export const InfoObraForm: React.FC<InfoObraFormProps> = ({
   onSave,
   onCancel,
   initialData,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  const form = useForm<InfoPresupuestoFormValues>({
+  const form = useForm<InfoObraFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {},
   });
 
-  const onSubmit = (data: InfoPresupuestoFormValues) => {
+  const onSubmit = (data: InfoObraFormValues) => {
     onSave(data);
     setIsEditing(false);
     form.reset(data);
@@ -65,26 +79,31 @@ export const InfoPresupuestoForm: React.FC<InfoPresupuestoFormProps> = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="flex flex-col gap-10">
-          <div className="grid grid-cols-3 grid-rows-1 gap-4 items-end">
+          <div className="grid grid-cols-5 grid-rows-1 gap-3 items-end max-w-4xl">
             <FormField
               control={form.control}
-              name="relevado"
+              name="numero_obra"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel
                     className={cn(
-                      "text-lg font-semibold text-heading-blue",
+                      "text-sm font-semibold text-heading-blue",
                       !isEditing && " text-stone-600"
                     )}
                   >
-                    Relevado
+                    Número Obra
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Relevado"
+                      placeholder="Número Obra"
                       {...field}
+                      type="number"
                       className={inputStyle}
                       disabled={!isEditing}
+                      value={
+                        field.value !== undefined ? String(field.value) : ""
+                      }
+                      onChange={(e) => field.onChange(BigInt(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -93,56 +112,34 @@ export const InfoPresupuestoForm: React.FC<InfoPresupuestoFormProps> = ({
             />
             <FormField
               control={form.control}
-              name="respuesta_presupuesto"
+              name="numero_presupuesto"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel
                     className={cn(
-                      "text-lg font-semibold text-heading-blue",
+                      "text-sm font-semibold text-heading-blue",
                       !isEditing && " text-stone-600"
                     )}
                   >
-                    Respuesta Presupuesto
+                    Número Presupuesto
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Respuesta Presupuesto"
+                      placeholder="Número Presupuesto"
                       {...field}
+                      type="number"
                       className={inputStyle}
                       disabled={!isEditing}
+                      value={
+                        field.value !== undefined ? String(field.value) : ""
+                      }
+                      onChange={(e) => field.onChange(BigInt(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="revision"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel
-                    className={cn(
-                      "text-lg font-semibold text-heading-blue",
-                      !isEditing && " text-stone-600"
-                    )}
-                  >
-                    Revisión
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Revisión"
-                      {...field}
-                      className={inputStyle}
-                      disabled={!isEditing}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-2 grid-rows-1 gap-4 items-end">
             <FormField
               control={form.control}
               name="importe"
@@ -150,7 +147,7 @@ export const InfoPresupuestoForm: React.FC<InfoPresupuestoFormProps> = ({
                 <FormItem>
                   <FormLabel
                     className={cn(
-                      "text-lg font-semibold text-heading-blue",
+                      "text-sm font-semibold text-heading-blue",
                       !isEditing && " text-stone-600"
                     )}
                   >
@@ -175,20 +172,20 @@ export const InfoPresupuestoForm: React.FC<InfoPresupuestoFormProps> = ({
             />
             <FormField
               control={form.control}
-              name="numero_presupuesto"
+              name="oc"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel
                     className={cn(
-                      "text-lg font-semibold text-heading-blue",
+                      "text-sm font-semibold text-heading-blue",
                       !isEditing && " text-stone-600"
                     )}
                   >
-                    Número Presupuesto
+                    OC
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Número Presupuesto"
+                      placeholder="OC"
                       {...field}
                       type="number"
                       className={inputStyle}
@@ -203,27 +200,110 @@ export const InfoPresupuestoForm: React.FC<InfoPresupuestoFormProps> = ({
                 </FormItem>
               )}
             />
-          </div>
-          <div className="grid grid-cols-2 grid-rows-1 gap-4 items-end">
             <FormField
               control={form.control}
-              name="via_envio"
+              name="url"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel
                     className={cn(
-                      "text-lg font-semibold text-heading-blue",
+                      "text-sm font-semibold text-heading-blue",
                       !isEditing && " text-stone-600"
                     )}
                   >
-                    Vía Envío
+                    URL
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Vía Envío"
+                      placeholder="URL"
                       {...field}
                       className={inputStyle}
                       disabled={!isEditing}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-3 grid-rows-1 max-w-2xl gap-4 items-end">
+            <FormField
+              control={form.control}
+              name="fecha"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Controller
+                      control={form.control}
+                      name="fecha"
+                      render={({ field }) => (
+                        <DatePickerField
+                          value={field.value}
+                          onChange={field.onChange}
+                          disabled={!isEditing}
+                          label="Fecha"
+                        />
+                      )}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="saldo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    className={cn(
+                      "text-sm font-semibold text-heading-blue",
+                      !isEditing && " text-stone-600"
+                    )}
+                  >
+                    Saldo
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Saldo"
+                      {...field}
+                      type="number"
+                      className={inputStyle}
+                      disabled={!isEditing}
+                      value={
+                        field.value !== undefined ? String(field.value) : ""
+                      }
+                      onChange={(e) => field.onChange(BigInt(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="porcentajePendiente"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    className={cn(
+                      "text-sm font-semibold text-heading-blue",
+                      !isEditing && " text-stone-600"
+                    )}
+                  >
+                    % Pendiente
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="% Pendiente"
+                      {...field}
+                      type="number"
+                      className={inputStyle}
+                      disabled={!isEditing}
+                      value={
+                        field.value !== undefined ? String(field.value) : ""
+                      }
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />

@@ -28,7 +28,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Cliente, EtiquetaCiente } from "@prisma/client";
 import SetttingsIcon from "@/components/icons/settings";
 import BoxArrowIcon from "@/components/icons/box-arrow";
-import { ClientForm } from "../[presupuestoId]/components/obra-form";
+import { ClientForm } from "../[obraId]/components/obra-form";
 
 interface ClienteConEtiquetas extends Cliente {
   label: EtiquetaCiente[];

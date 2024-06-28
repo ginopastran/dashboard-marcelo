@@ -93,12 +93,11 @@ export const ObraForm: React.FC<ClientFormProps> = ({
     try {
       setLoading(true);
       if (initialData) {
-        await axios.patch(`/api/presupuestos/${initialData.id}`, data);
+        await axios.patch(`/api/obras/${initialData.id}`, data);
       } else {
-        await axios.post(`/api/presupuestos`, data);
+        await axios.post(`/api/obras`, data);
       }
       router.refresh();
-      router.push(`/presupuestos`);
       toast.success(toastMessage);
       onClose();
     } catch (error: any) {
@@ -112,14 +111,14 @@ export const ObraForm: React.FC<ClientFormProps> = ({
     try {
       setLoading(true);
       if (initialData) {
-        await axios.delete(`/api/presupuestos/${initialData.id}`);
+        await axios.delete(`/api/obras/${initialData.id}`);
       }
       router.refresh();
-      router.push(`/presupuestos`);
-      toast.success("Presupuesto eliminado.");
+      router.push(`/obras`);
+      toast.success("Obra eliminado.");
     } catch (error: any) {
       toast.error(
-        "Asegúrese de eliminar primero todas las dependencias de este presupuesto."
+        "Asegúrese de eliminar primero todas las dependencias de esta obra."
       );
     } finally {
       setLoading(false);

@@ -5,38 +5,87 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Cliente, Contacto, Presupuesto } from "@prisma/client";
+import { Cliente, Contacto, Obra } from "@prisma/client";
 import { ClientDataTable } from "@/components/ui/client-data-table";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { PresupuestoDataTable } from "@/components/ui/presupuesto-data-table";
 import { columns } from "../../components/columns";
 import BoxArrowIcon from "@/components/icons/box-arrow";
 import Image from "next/image";
 import SetttingsIcon from "@/components/icons/settings";
-import { PresupuestoForm } from "./obra-form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
+import { ObraForm } from "./obra-form";
 
 interface ClienteConContacto extends Cliente {
   contacts: Contacto[];
 }
 
-interface PresupuestoConCliente extends Presupuesto {
+interface ObraConCliente extends Obra {
   cliente: ClienteConContacto;
   contact: Contacto | null;
   clienteId: string;
   contactId: string | null;
 }
 
-interface PresupuestoClientProps {
-  data: PresupuestoConCliente;
+interface ObraClientProps {
+  data: ObraConCliente;
   clients: ClienteConContacto[]; // Ensure you have clients as a prop
 }
 
-export const PresupuestoCard: React.FC<PresupuestoClientProps> = ({
-  data,
-  clients,
-}) => {
+const stateMapping: { [key: string]: string } = {
+  "Sin Comenzar": "SinComenzar",
+  "En Proceso": "EnProceso",
+  Finalizado: "Finalizado",
+};
+
+export const ObraCard: React.FC<ObraClientProps> = ({ data, clients }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleStateChange = async (id: string, newState: string) => {
+    const mappedState = stateMapping[newState];
+    try {
+      const response = await fetch(`/api/obras/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ state: mappedState }),
+      });
+
+      if (response.ok) {
+        toast.success("Estado actualizado correctamente.");
+        router.refresh();
+      } else {
+        toast.error("Error actualizando el estado");
+      }
+    } catch (error) {
+      console.error("Error updating state:", error);
+    }
+  };
+
+  const states = Object.keys(stateMapping);
+
+  const getBgColorClass = (state: string | null | undefined) => {
+    switch (state) {
+      case "SinComenzar":
+        return "bg-label-purple";
+      case "EnProceso":
+        return "bg-yellow-500";
+      case "Finalizado":
+        return "bg-green-500";
+      default:
+        return "bg-label-purple";
+    }
+  };
 
   return (
     <div>
@@ -53,9 +102,43 @@ export const PresupuestoCard: React.FC<PresupuestoClientProps> = ({
                 </div>
                 <h3 className=" text-heading-blue font-medium">{data.name}</h3>
                 <div className="flex gap-1">
-                  <div className="flex bg-label-purple rounded-full items-center gap-1 mr-2 py-[2px]">
-                    <div className="bg-white h-3 w-3 rounded-full items-start ml-1" />
-                    <p className="text-white text-xs mr-2">{data.state}</p>
+                  <div
+                    className={cn(
+                      "flex rounded-full items-center gap-1 mr-2 py-[2px]",
+                      getBgColorClass(data.state)
+                    )}
+                  >
+                    <div className="bg-white h-2 w-2 rounded-full items-start ml-1" />
+                    <Select
+                      value={
+                        Object.keys(stateMapping).find(
+                          (key) => stateMapping[key] === data.state
+                        ) || "Sin Comenzar"
+                      }
+                      onValueChange={(newState) =>
+                        handleStateChange(data.id, newState)
+                      }
+                    >
+                      <SelectTrigger className="text-white text-xs mr-2 p-0 py-2 border-none m-0 h-2 focus:ring-0 font-semibold">
+                        <SelectValue
+                          placeholder={
+                            Object.keys(stateMapping).find(
+                              (key) => stateMapping[key] === data.state
+                            ) || "Sin Comenzar"
+                          }
+                          className=" p-0 border-none m-0"
+                        />
+                      </SelectTrigger>
+                      <SelectContent className="">
+                        <SelectGroup>
+                          {states.map((state) => (
+                            <SelectItem key={state} value={state}>
+                              {state}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -82,7 +165,7 @@ export const PresupuestoCard: React.FC<PresupuestoClientProps> = ({
                   </button>
                 </DialogTrigger>
                 <DialogContent className=" max-w-4xl p-0 border-0 gap-0 rounded-3xl min-h-[60vh]">
-                  <PresupuestoForm
+                  <ObraForm
                     initialData={data}
                     clients={clients} // Pass the clients prop here
                     onClose={() => setIsDialogOpen(false)}
