@@ -76,6 +76,7 @@ model Cliente {
   presupuestos     Presupuesto[]
   label            EtiquetaCiente[] @relation("ClienteEtiquetas")
   contacts         Contacto[]       @relation("ContactoCliente")
+  obras            Obra[]           @relation("ClienteObras")
 }
 
 model Contacto {
@@ -89,6 +90,7 @@ model Contacto {
   clienteId           String
   cliente             Cliente       @relation("ContactoCliente", fields: [clienteId], references: [id])
   presupuestos        Presupuesto[] // Relación inversa, no se especifica fields ni references aquí
+  obras               Obra[]        @relation("ContactoObras") // Relación inversa para Obra
 }
 
 model EtiquetaCiente {
@@ -101,6 +103,13 @@ enum EstadoPresupuesto {
   Oportunidad
   Adjudicado
   Rechazado
+}
+
+enum EstadoObra {
+  Oportunidad
+  SinComenzar
+  Rechazado
+  Finalizado
 }
 
 model Presupuesto {
@@ -126,6 +135,8 @@ model Presupuesto {
   seguimientos          SeguimientoPresupuesto[]
   createdAt             DateTime                 @default(now())
   updatedAt             DateTime                 @updatedAt
+
+  @@index([state])
 }
 
 model SeguimientoPresupuesto {
@@ -135,4 +146,49 @@ model SeguimientoPresupuesto {
   presupuestoId String
   presupuesto   Presupuesto @relation(fields: [presupuestoId], references: [id])
   createdAt     DateTime    @default(now())
+}
+
+model Obra {
+  id                  String            @id @default(cuid())
+  name                String
+  numero_obra         BigInt
+  numero_presupuesto  BigInt?
+  importe             BigInt
+  oc                  BigInt
+  url                 String
+  fecha               DateTime
+  saldo               BigInt?
+  porcentajePendiente Int
+  state               EstadoObra
+  clienteId           String
+  cliente             Cliente           @relation("ClienteObras", fields: [clienteId], references: [id])
+  contactId           String?
+  contact             Contacto?         @relation("ContactoObras", fields: [contactId], references: [id])
+  seguimientos        SeguimientoObra[]
+  facturas            FacturaObra[]
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+}
+
+model FacturaObra {
+  id                 String    @id @default(cuid())
+  obraId             String
+  obra               Obra      @relation(fields: [obraId], references: [id])
+  fecha_factura      DateTime
+  importe            BigInt
+  fecha_aceptado     DateTime?
+  carga_portal       Int
+  fecha_cobro        DateTime?
+  nota_credito       BigInt?
+  nota_debito        BigInt?
+  recordatorio_cobro Int
+}
+
+model SeguimientoObra {
+  id          String   @id @default(cuid())
+  descripcion String
+  archivoURL  String
+  obraId      String
+  obra        Obra     @relation(fields: [obraId], references: [id])
+  createdAt   DateTime @default(now())
 }

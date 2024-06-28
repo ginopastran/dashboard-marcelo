@@ -13,7 +13,7 @@ import { columns } from "../../components/columns";
 import BoxArrowIcon from "@/components/icons/box-arrow";
 import Image from "next/image";
 import SetttingsIcon from "@/components/icons/settings";
-import { PresupuestoForm } from "./presupuesto-form";
+import { PresupuestoForm } from "./obra-form";
 
 interface ClienteConContacto extends Cliente {
   contacts: Contacto[];

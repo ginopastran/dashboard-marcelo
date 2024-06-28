@@ -138,11 +138,8 @@ export const Navigation = () => {
             <FolderIcon className={getLinkClassSvg("/presupuestos")} />
             Presupuestos
           </Link>
-          <Link
-            href={"/gestion-obras"}
-            className={getLinkClass("/gestion-obras")}
-          >
-            <HierarchyIcon className={getLinkClassSvg("/gestion-obras")} />
+          <Link href={"/obras"} className={getLinkClass("/obras")}>
+            <HierarchyIcon className={getLinkClassSvg("/obras")} />
             Gestión de Obras
           </Link>
           <Link

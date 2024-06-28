@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Cliente, Contacto, Presupuesto } from "@prisma/client";
+import { Cliente, Contacto, Obra, Presupuesto } from "@prisma/client";
 import Image from "next/image";
 import { Collapsible, CollapsibleContent } from "./collapsible";
 import BoxArrowIcon from "../icons/box-arrow";
@@ -11,17 +11,17 @@ interface ClienteConContacto extends Cliente {
   contacts: Contacto[];
 }
 
-interface PresupuestoConCliente extends Presupuesto {
+interface ObraConCliente extends Obra {
   cliente: ClienteConContacto;
   contact?: Contacto | null;
 }
 
 interface DataTableProps {
-  data: PresupuestoConCliente[];
+  data: ObraConCliente[];
   columns: ColumnDef<Contacto>[];
 }
 
-export function PresupuestoDataTable({ data, columns }: DataTableProps) {
+export function ObraDataTable({ data, columns }: DataTableProps) {
   const router = useRouter();
 
   const [openCollapsibles, setOpenCollapsibles] = useState<boolean[]>(
@@ -92,7 +92,7 @@ export function PresupuestoDataTable({ data, columns }: DataTableProps) {
               <div className="flex items-end gap-2">
                 <button
                   className=" text-heading-blue flex items-center text-lg font-semibold"
-                  onClick={() => router.push(`/presupuestos/${item.id}`)}
+                  onClick={() => router.push(`/obras/${item.id}`)}
                 >
                   <BoxArrowIcon className=" mr-2" /> Ver Información
                 </button>
