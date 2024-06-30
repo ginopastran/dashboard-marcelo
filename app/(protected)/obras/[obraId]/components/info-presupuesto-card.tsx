@@ -96,7 +96,7 @@ export const InfoPresupuestoCard: React.FC<InfoPresupuestoProps> = ({
   return (
     <div className="w-full">
       <div className="mt-3">
-        <div className="bg-white px-7 py-5 rounded-3xl mb-3 w-full flex h-full shadow-lg justify-between flex-col ">
+        <div className=" mb-3 w-full flex h-full  justify-between flex-col ">
           <div className="flex w-full h-full justify-between">
             <div className="flex flex-col gap-3 w-full">
               <InfoObraForm

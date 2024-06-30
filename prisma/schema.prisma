@@ -173,7 +173,8 @@ model FacturaObra {
   id                 String    @id @default(cuid())
   obraId             String
   obra               Obra      @relation(fields: [obraId], references: [id])
-  fecha_factura      DateTime
+  numero_factura     Int
+  fecha_factura      DateTime?
   importe            BigInt
   fecha_aceptado     DateTime?
   carga_portal       Int
@@ -181,6 +182,7 @@ model FacturaObra {
   nota_credito       BigInt?
   nota_debito        BigInt?
   recordatorio_cobro Int
+  observaciones      String?
 }
 
 model SeguimientoObra {

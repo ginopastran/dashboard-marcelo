@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ResponsableCard } from "./components/responsable-card";
 import { InfoPresupuestoCard } from "./components/info-presupuesto-card";
 import { ObraCard } from "./components/presupuesto-card";
+import Facturas from "./components/facturas";
 
 const ObraPage = async ({ params }: { params: { obraId: string } }) => {
   const obra = await db.obra.findUnique({
@@ -20,6 +21,7 @@ const ObraPage = async ({ params }: { params: { obraId: string } }) => {
         },
       },
       contact: true,
+      facturas: true,
     },
   });
 
@@ -30,7 +32,7 @@ const ObraPage = async ({ params }: { params: { obraId: string } }) => {
     },
   });
 
-  console.log(obra);
+  // console.log(obra);
 
   return (
     <div className="flex-col px-9 bg-secondary-background">
@@ -60,9 +62,10 @@ const ObraPage = async ({ params }: { params: { obraId: string } }) => {
         {obra ? (
           <>
             <ObraCard data={obra} clients={clients} />
-            <div className="flex w-full justify-between gap-10">
+            <div className="flex w-full flex-col justify-between gap-10 bg-white px-7 py-5 rounded-3xl">
               {/* <ResponsableCard data={obra} clients={clients} /> */}
               <InfoPresupuestoCard data={obra} clients={clients} />
+              <Facturas />
             </div>
           </>
         ) : (
