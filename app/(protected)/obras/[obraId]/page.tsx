@@ -1,6 +1,5 @@
 import React from "react";
-import Heading from "../components/heading";
-import { CornerUpLeft, Plus } from "lucide-react";
+import { CornerUpLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import Link from "next/link";
@@ -21,7 +20,7 @@ const ObraPage = async ({ params }: { params: { obraId: string } }) => {
         },
       },
       contact: true,
-      facturas: true,
+      facturas: true, // Asegúrate de incluir las facturas
     },
   });
 
@@ -31,8 +30,6 @@ const ObraPage = async ({ params }: { params: { obraId: string } }) => {
       client_name: "desc",
     },
   });
-
-  // console.log(obra);
 
   return (
     <div className="flex-col px-9 bg-secondary-background">
@@ -47,25 +44,29 @@ const ObraPage = async ({ params }: { params: { obraId: string } }) => {
               <CornerUpLeft className=" w-4 h-4" />
             </Button>
           </Link>
-          <div className="flex  gap-5 items-end">
-            <h1 className=" text-heading-blue text-4xl font-semibold ">
+          <div className="flex gap-5 items-end">
+            <h1 className="text-heading-blue text-4xl font-semibold ">
               {obra?.name}
             </h1>
-            <span className=" text-heading-blue text-sm font-semibold leading-6">
+            <span className="text-heading-blue text-sm font-semibold leading-6">
               {obra?.cliente.client_name}
             </span>
           </div>
         </div>
       </nav>
-      <div className=" h-[1px] w-full bg-black/60 mb-9" />
+      <div className="h-[1px] w-full bg-black/60 mb-9" />
       <div className="flex-1 space-y-6">
         {obra ? (
           <>
-            <ObraCard data={obra} clients={clients} />
-            <div className="flex w-full flex-col justify-between gap-10 bg-white px-7 py-5 rounded-3xl">
-              {/* <ResponsableCard data={obra} clients={clients} /> */}
-              <InfoPresupuestoCard data={obra} clients={clients} />
-              <Facturas />
+            <div className=" mb-8">
+              <ObraCard data={obra} clients={clients} />
+              <div className="flex w-full flex-col justify-between gap-10 bg-white px-7 py-5 rounded-3xl shadow-lg">
+                <InfoPresupuestoCard data={obra} clients={clients} />
+                <Facturas
+                  obraId={params.obraId}
+                  initialFacturas={obra.facturas}
+                />
+              </div>
             </div>
           </>
         ) : (

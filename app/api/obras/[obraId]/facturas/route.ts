@@ -17,6 +17,7 @@ export async function POST(
       return new NextResponse("Obra ID is required", { status: 400 });
     }
 
+    // Obtener el último número de factura y generar el nuevo número de factura
     const lastFactura = await db.facturaObra.findFirst({
       where: { obraId: params.obraId },
       orderBy: { numero_factura: "desc" },
@@ -28,11 +29,12 @@ export async function POST(
       data: {
         obraId: params.obraId,
         numero_factura: nuevoNumeroFactura,
-        fecha_factura: new Date(), // Puedes ajustar este campo según lo que necesites
-        importe: BigInt(0), // Valor predeterminado
-        carga_portal: 0, // Valor predeterminado
-        recordatorio_cobro: 0, // Valor predeterminado
-        observaciones: "", // Valor predeterminado
+        // Campos predeterminados
+        fecha_factura: null,
+        importe: BigInt(0),
+        carga_portal: 0,
+        recordatorio_cobro: 0,
+        observaciones: "",
       },
     });
 

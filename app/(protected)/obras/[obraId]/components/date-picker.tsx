@@ -29,7 +29,7 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
     <div className="flex flex-col space-y-2  w-full">
       <label
         className={cn(
-          `text-lg font-semibold text-heading-blue ${
+          `text-sm font-semibold text-heading-blue ${
             disabled && " text-stone-600"
           }`
         )}
