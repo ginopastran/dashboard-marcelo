@@ -313,7 +313,7 @@ export const InfoObraForm: React.FC<InfoObraFormProps> = ({
           </div>
         </div>
         {isEditing ? (
-          <div className="flex items-center justify-end space-x-2 pt-4">
+          <div className="flex items-center justify-end space-x-2 pb-4">
             <Button
               onClick={(e) => {
                 e.preventDefault();
@@ -335,7 +335,7 @@ export const InfoObraForm: React.FC<InfoObraFormProps> = ({
             </Button>
           </div>
         ) : (
-          <div className=" flex items-center justify-end pt-4">
+          <div className=" flex items-center justify-end pb-4">
             <Button
               onClick={(e) => {
                 e.preventDefault();

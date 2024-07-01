@@ -92,7 +92,7 @@ export const FacturaForm: React.FC<FacturaFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
         <div className="flex flex-col gap-10">
           <div className="grid grid-cols-5 grid-rows-1 gap-3 items-end max-w-4xl">
             <FormField
@@ -331,7 +331,7 @@ export const FacturaForm: React.FC<FacturaFormProps> = ({
           </div>
         </div>
         {isEditing ? (
-          <div className="flex items-center justify-end space-x-2 pt-4">
+          <div className="flex items-center justify-end space-x-2 pb-4">
             <Button
               onClick={(e) => {
                 e.preventDefault();
@@ -353,7 +353,7 @@ export const FacturaForm: React.FC<FacturaFormProps> = ({
             </Button>
           </div>
         ) : (
-          <div className=" flex items-center justify-end pt-4">
+          <div className=" flex items-center justify-end pb-4">
             <Button
               onClick={(e) => {
                 e.preventDefault();

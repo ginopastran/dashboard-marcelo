@@ -125,7 +125,7 @@ const Facturas: React.FC<FacturasProps> = ({ obraId, initialFacturas }) => {
 
   return (
     <div className="flex flex-col items-start w-full gap-10">
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex items-center justify-start gap-4 w-full">
         {facturas.map((factura) => (
           <div key={factura.id} className="flex items-center justify-between">
             <Button
